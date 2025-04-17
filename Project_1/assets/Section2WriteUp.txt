@@ -1,0 +1,14 @@
+Section 2 README, BRIAN HUDICK
+-majority of the work for grabbing cards is being done via card.lua as opposed to main. the main thing being 
+ done through main is making sure the selected card appears on top when grabbed
+-majority of the code for frame updated functions is stored in its own function either in main.lua or card.lua, 
+ but almost all functionality for code I know is only going to get used once is built inside the load() function in 
+ main.lua
+-the code inside graber and card are more or less straightforward, it's the logic for setting up the cards 
+ and updating the grabber class that gets a bit messy
+-if I could figure out how to cache the selected card into the grabber class without causing errors, it'd 
+ make it a little cleaner
+-I'm currently using the update pattern because input and card movement needs to be polled overtime, the 
+ singleton pattern is in effect for the card_list that stores all instances of the cards as well as table 
+ deck which stores the deck pile, state pattern is being used to track which card is being grabbed, finally 
+ I'm using the flyweight class to store the draw data for each card inside each card instance

@@ -1,17 +1,20 @@
 --Brian Hudick
 --credits: vecteezy.com and creazilla.com for card suite vector art
-require "card"
-require "Graber"
+require "scripts/card"
+require "scripts/Graber"
+require "scripts/stacks"
 io.stdout:setvbuf("no")
 
 
 card_list = {}
 deck = {}
 draw_pile = {}
+Suit_Stacks = {}
 deckPointer = 1
 
 screenWidth = 1280
 screenHeight = 720
+canClickDeck = true
 
 
 Suites = {"S", "H", "C", "D"}
@@ -24,9 +27,19 @@ function love.load()
   
   grabber = GrabberClass:new()
   
+  
+  --creating the deck button
+  deckButton = StackClass:new(20, 40, 50, 80, 0)
+  
+  for s = 1, #Suites do
+    local stack = StackClass:new(1100, 40+(100*(s-1)), 50, 80, 1)
+    stack.suite = Suites[s]
+    table.insert(Suit_Stacks, stack)
+  end
   --initializing the cards
   local i = 50
   local j = 50
+  
   for _, suite in ipairs(Suites) do
     
     print(tostring(j))
@@ -60,10 +73,12 @@ function love.load()
     end
   end
   
+  
+  --inserting the rest if the cards into the deck tracker
   local n = 1
   for m = m, (#card_list) do
     table.insert(deck, card_list[m])
-    card_list[m].position = Vector(100 + (10*n), 600)
+    card_list[m].position = Vector(100 + (10*n), 1000)
     card_list[m].flipped = false
     n = n + 1
   end
@@ -71,6 +86,11 @@ end
 function love.draw()
   love.graphics.setBackgroundColor( 0, 0.5, 0, 1 )
   love.graphics.print("Solitaire", 10, 10)
+  
+  deckButton:draw()
+  for _, suite in ipairs(Suit_Stacks) do
+    suite:draw()
+  end
   
   local selected_card = nil
   
@@ -85,6 +105,7 @@ function love.draw()
   --draws selected card on top of all the rest
   if selected_card ~= nil then
     local y = 1
+    --removes card from the deck tracker if the card is from the deck
     for y=y, #deck do
       if deck[y] == selected_card then
         table.remove(deck, y)
@@ -92,23 +113,26 @@ function love.draw()
     end
     selected_card:draw()
   end
-  --debug lines
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print("Mouse: " .. tostring(grabber.currentMousePos.x) .. ", " .. tostring(grabber.currentMousePos.y))
+  --debug lines (uncomment as needed for mouse position)
+  --love.graphics.setColor(1, 1, 1, 1)
+  --love.graphics.print("Mouse: " .. tostring(grabber.currentMousePos.x) .. ", " .. tostring(grabber.currentMousePos.y))
 end
 
 function love.update(dt)
   grabber:update()
   checkForMouseMoving()
-end
-
-function love.keypressed(key, scancode, isrepeat)
-  if key == "w" then
+  tableuUpdate()
+  --checks to see if the deck has been pressed (could be more optimized)
+  if deckButton:InputCheck(grabber) and canClickDeck then
     deckDraw()
+    canClickDeck = false
+  end
+  
+  if not love.mouse.isDown(1) then
+    canClickDeck = true
   end
 end
-
-
+--shuffles the deck at load time for true, pseudo-randomness
 function ShuffleDeck(tab)
     local i
     --math.randomseed(os.time)
@@ -117,7 +141,7 @@ function ShuffleDeck(tab)
       tab[i], tab[j] = tab[j], tab[i]
     end
 end
-
+--takes three cards from the deck and puts them in a grabbable position
 function deckDraw()
   if #deck == 0 then
     return
@@ -133,7 +157,7 @@ function deckDraw()
   end
   --update the deck positions
   for p = 1, #deck do
-    deck[p].position = Vector(100 + (50*p), 600)
+    deck[p].position = Vector(100 + (50*p), 1000)
   end
   
   --update draw pile positions
@@ -149,5 +173,13 @@ function checkForMouseMoving()
   
   for _, card in ipairs(card_list) do
     card:checkForMouseOver(grabber)
+  end
+end
+--makes the top card of the tableu stack  face up
+function tableuUpdate()
+  for m = 2, #card_list - 1 do
+    if card_list[m].state == 2 then
+      card_list[m-1].flipped = false
+    end
   end
 end
