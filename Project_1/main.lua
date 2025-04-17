@@ -1,4 +1,10 @@
 --Brian Hudick
+--CMPM 121 - UCSC Spring 2025
+--Professor Zach Emerzian
+--Project 1: Solitaire
+--Credits to assets in README
+--4-17-2025
+
 --credits: vecteezy.com and creazilla.com for card suite vector art
 require "scripts/card"
 require "scripts/Graber"
@@ -24,7 +30,7 @@ Colors = {"B", "R"}
 
 function love.load()
   love.window.setMode(screenWidth, screenHeight)
-  
+  love.window.setTitle("CMPM 121 Project 1: Solitaire - BHudick")
   grabber = GrabberClass:new()
   
   
