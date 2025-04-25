@@ -76,7 +76,6 @@ CardClass = {}
     if not love.mouse.isDown(1) then
       self.state = CARD_STATE.IDLE
       grabber.holding = false
-
       --print("Release")
       return
     end

@@ -16,6 +16,9 @@ card_list = {}
 deck = {}
 draw_pile = {}
 Suit_Stacks = {}
+Grab_Stack = {}
+
+Draw_Order = {card_list, Suit_Stacks, draw_pile, Grab_Stack}
 deckPointer = 1
 
 screenWidth = 1280
@@ -89,36 +92,22 @@ function love.load()
     n = n + 1
   end
 end
+--|||||||--
+--spacing--
+--|||||||--
 function love.draw()
   love.graphics.setBackgroundColor( 0, 0.5, 0, 1 )
   love.graphics.print("Solitaire", 10, 10)
   
   deckButton:draw()
-  for _, suite in ipairs(Suit_Stacks) do
-    suite:draw()
-  end
-  
-  local selected_card = nil
-  
-  for _, c in ipairs(card_list) do
-    --checks for grabbed card
-    if c:currentState() == 2 then
-      selected_card = c
+  for _, drawable in ipairs(Draw_Order) do
+    for _, C in ipairs(drawable) do
+      C:draw();
     end
-    c:draw()
   end
   
-  --draws selected card on top of all the rest
-  if selected_card ~= nil then
-    local y = 1
-    --removes card from the deck tracker if the card is from the deck
-    for y=y, #deck do
-      if deck[y] == selected_card then
-        table.remove(deck, y)
-      end
-    end
-    selected_card:draw()
-  end
+  
+  
   --debug lines (uncomment as needed for mouse position)
   --love.graphics.setColor(1, 1, 1, 1)
   --love.graphics.print("Mouse: " .. tostring(grabber.currentMousePos.x) .. ", " .. tostring(grabber.currentMousePos.y))
@@ -126,6 +115,7 @@ end
 
 function love.update(dt)
   grabber:update()
+  selectCard();
   checkForMouseMoving()
   tableuUpdate()
   --checks to see if the deck has been pressed (could be more optimized)
@@ -133,11 +123,15 @@ function love.update(dt)
     deckDraw()
     canClickDeck = false
   end
-  
   if not love.mouse.isDown(1) then
     canClickDeck = true
   end
+  
+  
 end
+--|||||||--
+--spacing--
+--|||||||--
 --shuffles the deck at load time for true, pseudo-randomness
 function ShuffleDeck(tab)
     local i
@@ -147,12 +141,36 @@ function ShuffleDeck(tab)
       tab[i], tab[j] = tab[j], tab[i]
     end
 end
+--|||||||--
+--spacing--
+--|||||||--
 --takes three cards from the deck and puts them in a grabbable position
+function selectCard()
+  for _, c in ipairs(card_list) do
+    --checks for grabbed card
+    if c:currentState() == 2 then
+      table.insert(Grab_Stack, c);
+    end
+  end
+  --draws selected card on top of all the rest
+  for _, c in ipairs(Grab_Stack) do
+    local y = 1
+    --removes card from the deck tracker if the card is from the deck
+    for y=y, #deck do
+      if deck[y] == c then
+        table.remove(deck, y)
+      end
+    end
+  end
+end
+--|||||||--
+--spacing--
+--|||||||--
+--hits the deck draw function--
 function deckDraw()
   if #deck == 0 then
     return
   end
-  
   draw_pile = {}
   for r = 1, 3 do
     if deckPointer > #deck then
@@ -165,13 +183,14 @@ function deckDraw()
   for p = 1, #deck do
     deck[p].position = Vector(100 + (50*p), 1000)
   end
-  
   --update draw pile positions
   for q = 1, #draw_pile do
     draw_pile[q].position = Vector(50, 100 + (50*q))
   end
 end
-
+--|||||||--
+--spacing--
+--|||||||--
 function checkForMouseMoving()
   if grabber.currentMousePos == nil then
     return
@@ -181,6 +200,9 @@ function checkForMouseMoving()
     card:checkForMouseOver(grabber)
   end
 end
+--|||||||--
+--spacing--
+--|||||||--
 --makes the top card of the tableu stack  face up
 function tableuUpdate()
   for m = 2, #card_list - 1 do

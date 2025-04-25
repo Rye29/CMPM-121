@@ -14,7 +14,6 @@ function GrabberClass:new()
   grabber.grabPos = nil
   
   -- NEW: we'll want to keep track of the object (ie. card) we're holding
-  grabber.heldObject = nil
   grabber.holding = false
   return grabber
 end
@@ -43,7 +42,6 @@ function GrabberClass:release()
   print("RELEASE - ")
   -- NEW: some more logic stubs here
   if self.heldObject == nil then -- we have nothing to release
-    
       self.grabPos = nil
     return
   end
