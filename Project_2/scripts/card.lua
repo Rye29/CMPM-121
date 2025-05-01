@@ -98,7 +98,7 @@ CardClass = {}
   
   --self.state = isMouseOver and CARD_STATE.MOUSE_OVER or CARD_STATE.IDLE
   if self.parent ~= nil then
-    self.position = Vector(self.parent.position.x, self.parent.position.y + 20)
+    self.position = Vector(self.parent.position.x, self.parent.position.y + 40)
   end
   if isMouseOver and love.mouse.isDown(1) and not grabber.holding and self.flipped == false and canGrab then
     self.state = CARD_STATE.GRABBED

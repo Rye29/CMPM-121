@@ -47,7 +47,7 @@ function love.load()
     table.insert(Suit_Stacks, stack)
     table.insert(Draw_Order, stack.holding)
   end
-  
+  print("suite stack count: " .. tostring(#Suit_Stacks))
   table.insert(Draw_Order, grabber.grabbedItem)
   --initializing the cards
   local i = 50
@@ -82,14 +82,16 @@ function love.load()
   local k = 1
   local l = 7
   local m = 1
+  
   for l = 7, 1, -1 do
     local st = StackClass:new(starting_stack_x - (l*60), starting_stack_y, 50, 80, 1)
     st.suite = "F"
     table.insert(Suit_Stacks, st)
-    for k = 1, l do 
+    table.insert(Suit_Stacks[#Suit_Stacks].holding, card_list[m])
+    print("peanits")
+    for k = 1, l do
       if k ~= l then
         card_list[m].flipped = true
-        table.insert(Suit_Stacks[#Suit_Stacks], card_list[m])
       else
         card_list[m].flipped = false
       end
@@ -290,6 +292,7 @@ function gameReset()
   
   for _, stacked in ipairs(Suit_Stacks) do
     stacked.nextRank = 1
+    stacked.holding = {}
   end
   
   for _, c in ipairs(card_list) do
@@ -304,7 +307,13 @@ function gameReset()
   local k = 1
   local l = 7
   local m = 1
+  
+  local suit_stack_start = 5
+  
   for l = 7, 1, -1 do
+    
+    table.insert(Suit_Stacks[suit_stack_start].holding, card_list[m])
+
     for k = 1, l do 
       if k ~= l then
         card_list[m].flipped = true
@@ -314,6 +323,7 @@ function gameReset()
       card_list[m].position = Vector(starting_stack_x - (l*60), starting_stack_y + ((k-1)*starting_stack_y))
       m=m+1
     end
+    suit_stack_start = suit_stack_start + 1
   end
   
   

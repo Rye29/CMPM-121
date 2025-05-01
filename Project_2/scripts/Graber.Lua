@@ -45,32 +45,53 @@ function GrabberClass:grab()
   print("GRAB - " .. tostring(self.grabPos))
 end
 function GrabberClass:release(stackStack, rankRead, cardList)
-  
-  -- TODO: eventually check if release position is invalid and if it is
-  -- return the heldObject to the grabPosition
   if #self.grabbedItem == 0 then
     return
   end
-  --release doesnt stop, add something to fix that in main (like remove from self.grabbedItem on release)
+  
+  local grabbedCard = self.grabbedItem[#self.grabbedItem];
   local releasePos = self.grabPos
+  
   for _, s in ipairs(stackStack) do
-    if s:isOver(self) and (s.suite == self.grabbedItem[#self.grabbedItem].suite or s.suite == "F") and (rankRead[s.nextRank] == self.grabbedItem[#self.grabbedItem].rank or s.suite == "F") then
+    if s:isOver(self) and (s.suite == grabbedCard.suite or s.suite == "F") and (rankRead[s.nextRank] == grabbedCard.rank or s.suite == "F") then
+      
+      if(s.suite == "F" and #s.holding > 0) then
+        break
+      end
+      
+      for _, j in ipairs(stackStack) do
+        if j.suite == "F" and j ~= s then
+          if #j.holding == 1 then
+            if grabbedCard == j.holding[1] then
+              table.remove(j.holding, 1)
+            end
+          end
+        end
+      end
       self.lastMoveValid = true;
-      grabber.grabbedItem[#self.grabbedItem].isInDeck = false
 
-      table.insert(s.holding, self.grabbedItem[#self.grabbedItem])
+      
+      grabbedCard.isInDeck = false
+
+      table.insert(s.holding, grabbedCard)
       s.nextRank = s.nextRank + 1
       releasePos = s.position
-      self.grabbedItem[#self.grabbedItem].parent = nil
+      grabbedCard.parent = nil
+      
+      self.grabbedItem[#self.grabbedItem].position = releasePos
+      self.grabPos = nil
+      self.grabbedItem = {}
+      print("RELEASE - " .. tostring(self.lastMoveValid).. "peanut")
+      return
     end
   end
   
   for _, c in ipairs(cardList) do
     if c:currentState() == 1 then
-      if c.color ~= self.grabbedItem[#self.grabbedItem].color then
+      if c.color ~= grabbedCard.color then
         local n = 1
         for _, d in ipairs(rankRead) do
-          if rankRead[n] == self.grabbedItem[#self.grabbedItem].rank then
+          if rankRead[n] == grabbedCard.rank then
             break
           end
           n = n + 1
@@ -79,16 +100,28 @@ function GrabberClass:release(stackStack, rankRead, cardList)
         if n ~= #rankRead and c.rank == rankRead[n+1] and not c.flipped then
           releasePos = Vector(c.position.x, c.position.y+40)
           
-          if self.grabbedItem[#self.grabbedItem].parent ~= nil then
-            self.grabbedItem[#self.grabbedItem].parent.child = nil
-            self.grabbedItem[#self.grabbedItem].parent = nil
-
+          if grabbedCard.parent ~= nil then
+            grabbedCard.parent.child = nil
+            grabbedCard.parent = nil
           end
           
-          self.grabbedItem[#self.grabbedItem].parent = c
-          c.child = self.grabbedItem[#self.grabbedItem]
+          grabbedCard.parent = c
+          c.child = grabbedCard
           self.lastMoveValid = true
-          self.grabbedItem[#self.grabbedItem].isInDeck = false
+          grabbedCard.isInDeck = false
+          
+          for _, s in ipairs(stackStack) do
+            if s.suite == "F" then
+              if #s.holding == 1 then
+                
+                if grabbedCard == s.holding[1] then
+                  table.remove(s.holding, 1)
+                  break
+                end
+              end
+            end
+          end
+          break
         end
       end
       c.state = 0;
