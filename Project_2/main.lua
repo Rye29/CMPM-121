@@ -19,7 +19,7 @@ deck = {}
 draw_pile = {}
 Suit_Stacks = {}
 
-  Draw_Order = {Suit_Stacks, card_list, draw_pile}
+  Draw_Order = {Suit_Stacks, draw_pile}
 deckPointer = 1
 
 screenWidth = 1280
@@ -28,6 +28,7 @@ canClickDeck = true
 
 Suites = {"S", "H", "C", "D"}
 Ranks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+Card_Render_Order = {{}, {}, {}, {}}
 Colors = {"B", "R"}
 
 
@@ -52,6 +53,8 @@ function love.load()
   local i = 50
   local j = 50
   
+  local order_index = 1
+  
   for _, suite in ipairs(Suites) do
     
     print(tostring(j))
@@ -62,10 +65,12 @@ function love.load()
       end
       local card_instance = CardClass:new(i, j, suite, rank, col, false)
       table.insert(card_list, card_instance)
+      table.insert(Card_Render_Order[order_index], card_instance)
       i = i + 50
     end
     i = 50
     j = j + 120
+    order_index = order_index+1
   end
   
   --putting the cards in the tableau stacks
@@ -78,9 +83,13 @@ function love.load()
   local l = 7
   local m = 1
   for l = 7, 1, -1 do
+    local st = StackClass:new(starting_stack_x - (l*60), starting_stack_y, 50, 80, 1)
+    st.suite = "F"
+    table.insert(Suit_Stacks, st)
     for k = 1, l do 
       if k ~= l then
         card_list[m].flipped = true
+        table.insert(Suit_Stacks[#Suit_Stacks], card_list[m])
       else
         card_list[m].flipped = false
       end
@@ -97,6 +106,7 @@ function love.load()
     table.insert(deck, card_list[m])
     card_list[m].position = Vector(100 + (10*n), 1000)
     card_list[m].flipped = false
+    card_list[m].isInDeck = true
     n = n + 1
   end
 end
@@ -110,7 +120,36 @@ function love.draw()
   deckButton:draw()
   for _, drawable in ipairs(Draw_Order) do
     for _, C in ipairs(drawable) do
+        
       C:draw();
+      
+      local chld = C.child
+      while cld ~= nil do
+        chld:draw()
+        chld = chld.child
+      end
+      
+    end
+  end
+  
+  for i = 1, #card_list do
+    if card_list[i].flipped then
+      card_list[i]:draw()
+    end
+  end
+  
+  for i=#(Card_Render_Order[1]), 1, -1 do
+    for j = 1, 4 do
+      if not Card_Render_Order[j][i].flipped then
+        Card_Render_Order[j][i]:draw()
+      end
+    end
+  end
+  
+  
+  for _, s in ipairs(Suit_Stacks) do
+    for _, h in ipairs(s.holding) do
+      h:draw()
     end
   end
   
@@ -127,8 +166,8 @@ end
 function love.update(dt)
   selectCard();
   grabber:update(Suit_Stacks, Ranks, card_list)
-  checkForMouseMoving()
   tableuUpdate()
+  checkForMouseMoving()
   --checks to see if the deck has been pressed (could be more optimized)
   if deckButton:InputCheck(grabber) and canClickDeck then
     deckDraw()
@@ -166,6 +205,8 @@ end
 --|||||||--
 --takes three cards from the deck and puts them in a grabbable position
 function selectCard()
+  grabber.lastMoveValid = false;
+
   for _, c in ipairs(card_list) do
     --checks for grabbed card
     if c:currentState() == 2 then
@@ -175,15 +216,17 @@ function selectCard()
     end
   end
   --draws selected card on top of all the rest
-  for _, c in ipairs(grabber.grabbedItem) do
+  local c
+  for _, c in ipairs(deck) do
     local y = 1
     --removes card from the deck tracker if the card is from the deck
     for y=y, #deck do
-      if deck[y] == c then
+      if deck[y] == c and c.isInDeck == false then
         table.remove(deck, y)
       end
     end
   end
+  
 end
 --|||||||--
 --spacing--
@@ -230,7 +273,6 @@ function tableuUpdate()
   for m = 2, #card_list - 1 do
     if card_list[m] == grabber.LastCardGrabbed and grabber.lastMoveValid then
       card_list[m-1].flipped = false
-      grabber.lastMoveValid = false
       grabber.LastCardGrabbed = nil
     end
   end
@@ -252,6 +294,7 @@ function gameReset()
   
   for _, c in ipairs(card_list) do
     c.parent = nil
+    c.isInDeck = false
   end
   ShuffleDeck(card_list)
   
@@ -280,6 +323,7 @@ function gameReset()
     table.insert(deck, card_list[m])
     card_list[m].position = Vector(100 + (10*n), 1000)
     card_list[m].flipped = false
+    card_list[m].isInDeck = true
     n = n + 1
   end
 end

@@ -30,7 +30,9 @@ CardClass = {}
    
    cardClass.state = CARD_STATE.IDLE
    cardClass.flipped = true
+   cardClass.isInDeck = false
    cardClass.parent = nil
+   cardClass.child = nil
    
    return cardClass
  end

@@ -54,8 +54,10 @@ function GrabberClass:release(stackStack, rankRead, cardList)
   --release doesnt stop, add something to fix that in main (like remove from self.grabbedItem on release)
   local releasePos = self.grabPos
   for _, s in ipairs(stackStack) do
-    if s:isOver(self) and s.suite == self.grabbedItem[#self.grabbedItem].suite and rankRead[s.nextRank] == self.grabbedItem[#self.grabbedItem].rank then
+    if s:isOver(self) and (s.suite == self.grabbedItem[#self.grabbedItem].suite or s.suite == "F") and (rankRead[s.nextRank] == self.grabbedItem[#self.grabbedItem].rank or s.suite == "F") then
       self.lastMoveValid = true;
+      grabber.grabbedItem[#self.grabbedItem].isInDeck = false
+
       table.insert(s.holding, self.grabbedItem[#self.grabbedItem])
       s.nextRank = s.nextRank + 1
       releasePos = s.position
@@ -65,18 +67,28 @@ function GrabberClass:release(stackStack, rankRead, cardList)
   
   for _, c in ipairs(cardList) do
     if c:currentState() == 1 then
-      if c.color ~= grabber.grabbedItem[#self.grabbedItem].color then
+      if c.color ~= self.grabbedItem[#self.grabbedItem].color then
         local n = 1
         for _, d in ipairs(rankRead) do
-          if rankRead[n] == grabber.grabbedItem[#self.grabbedItem].rank then
+          if rankRead[n] == self.grabbedItem[#self.grabbedItem].rank then
             break
           end
           n = n + 1
         end
         
-        if n ~= #rankRead and c.rank == rankRead[n+1] then
-          releasePos = Vector(c.position.x, c.position.y+20)
-          c.parent = grabber.grabbedItem[#self.grabbedItem]
+        if n ~= #rankRead and c.rank == rankRead[n+1] and not c.flipped then
+          releasePos = Vector(c.position.x, c.position.y+40)
+          
+          if self.grabbedItem[#self.grabbedItem].parent ~= nil then
+            self.grabbedItem[#self.grabbedItem].parent.child = nil
+            self.grabbedItem[#self.grabbedItem].parent = nil
+
+          end
+          
+          self.grabbedItem[#self.grabbedItem].parent = c
+          c.child = self.grabbedItem[#self.grabbedItem]
+          self.lastMoveValid = true
+          self.grabbedItem[#self.grabbedItem].isInDeck = false
         end
       end
       c.state = 0;

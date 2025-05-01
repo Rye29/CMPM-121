@@ -51,7 +51,7 @@ function StackClass:draw()
         love.graphics.draw(heart, self.position.x + Width/2-8, self.position.y + Height/2 - 5, 0, card_scale, card_scale)
       elseif self.suite == "C" then
         love.graphics.draw(club, self.position.x + Width/2-11, self.position.y + Height/2 - 12, 0, card_scale, card_scale)
-      else
+      elseif self.suite == "D" then
         love.graphics.draw(diamond, self.position.x + Width/2-11, self.position.y + Height/2 - 12, 0, card_scale*0.5, card_scale*0.5)
       end
 
