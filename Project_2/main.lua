@@ -46,7 +46,6 @@ function love.load()
   winCon = ObserverClass:new()
   winObs = SubjectClass:new()
   winObs:subscribe(winCon)
-  --still need to pass observer to graber/release function
   
   for s = 1, #Suites do
     local stack = StackClass:new(1100, 40+(100*(s-1)), 50, 80, 1)
@@ -95,7 +94,7 @@ function love.load()
     st.suite = "F"
     table.insert(Suit_Stacks, st)
     table.insert(Suit_Stacks[#Suit_Stacks].holding, card_list[m])
-    print("peanits")
+    print("peanuts")
     for k = 1, l do
       if k ~= l then
         card_list[m].flipped = true
@@ -191,7 +190,7 @@ function love.update(dt)
   grabber:update(Suit_Stacks, Ranks, card_list, winObs)
   tableuUpdate()
   checkForMouseMoving()
-  --checks to see if the deck has been pressed (could be more optimized)
+  
   if deckButton:InputCheck(grabber) and canClickDeck then
     deckDraw()
     canClickDeck = false

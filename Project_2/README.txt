@@ -1,7 +1,7 @@
 -Brian Hudick
 -CMPM 121 UCSC Spring 2025
 -Prof. Zach Emerzian
--Project 1: Solitaire
+-Project 2: Better Solitaire
 
 Credits:
 -Card.lua, Vector.lua, Graber.lua
@@ -24,17 +24,37 @@ Programming patterns:
 -I'm using the flyweight class to store the draw data for each card inside 
  each card and stack instance (and also the object pattern to actually make everything possible to track)
 
-Postmortem:
--there was a lot of features that I couldn't make work in time:
- storing the selected card in the grabber instead of locally in draw 
- (this would crash the game anytime I tried to implement it), there's a lot
- more singletons than I'm comfortable with and maybe it would've been better
- to flyweight them as a pseudo-class. Implementing a proper draw order would definitely
- improve quality of life. Finally the deck and draw pile manipulation
- felt a bit messy, maybe I could've cleaned it up with more flyweighting because
- I primarily used flyweighting for organizing the drawings.
+Updated patterns:
+-Observer pattern: I implemented a simple observer pattern as detailed by the class textbook in order to detect when the player has won
+-flyweight data: fixed old flyweight pattern as it turned out it wasn't actually sharing the suite image assets like I thought it was
+-Subclass (but not really): I created a subclass for already existing suite piles (functionally speaking) to ensure that the tableau
+functions properly and adheres to the rules. It was originally intended to be a true subclass, but on paper it functions as more of a state
 
--However, I really like that I was able to modularize the objects (stacks, cards, and deck piles)
- as well as being able to put things together this well and have a (mostly) solid game in which
- I was able to anti-bug most of my code with more than enough contingency checks to keep the game running
- properly.
+Postmortem:
+-When compared to the last project, a decent amount has been added and improved:
+    -the grabber now stores the grabbed object locally in a table and pops the cards in
+     and out based on input
+    -cards can now be stacked on top of each other so long as they adhere to standard rules
+    -cards have a parent/child system in which children use to copy parent locations
+    -child parent system allows for snapping cards to each other
+    -render order for the cards has been implemented, and goes in the order of:
+     face down cards -> face up cards -> ranks high to low -> grabbed card
+    -the reset button can reset the card game into the starting game state
+
+-However there's some things I didn't like that still made its way in:
+    -almost everything that has to do with validation checks is crammed into the release function
+     and isn't very easy to extend
+    -still too many singletons, even though I was able to reduce them, it probably would've been better to
+     combine them into one tracker table with different sub-tables but that likely wouldn't be fixing the
+     underlying issue of the singletons eating up memory
+    -more of a personal note but I kept using the word "flyweight" in the previous readme when in reality,
+     that likely would've only caused even more issues since flyweight classes need to have something in common
+     to be efficient such as meshes and textures
+
+-Code review summaries:
+  -Isaac Kim: -liked that I was able to separate the functionality to other files and keep main.lua relatively clean
+              -suggested that I redo the suite system via enumeration as opposed to a string, and that release() 
+               be broken into more helper functions
+              -however, he acknowledged that it might be too late to do a complete overhaul of the release function,
+               so I added in more comments to make it more readable
+
