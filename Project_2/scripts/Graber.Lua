@@ -1,6 +1,6 @@
-
 require "scripts/Vector"
 require "scripts/stacks"
+require "scripts/Observer"
 
 GrabberClass = {}
 
@@ -23,7 +23,7 @@ function GrabberClass:new()
   return grabber
 end
 
-function GrabberClass:update(stackStack, rankRead, cardList)
+function GrabberClass:update(stackStack, rankRead, cardList, subject)
   self.currentMousePos = Vector(
     love.mouse.getX(),
     love.mouse.getY()
@@ -35,7 +35,19 @@ function GrabberClass:update(stackStack, rankRead, cardList)
   end
   -- Release
   if not love.mouse.isDown(1) and self.grabPos ~= nil then
-    self:release(stackStack, rankRead, cardList)
+    self:release(stackStack, rankRead, cardList, subject)
+    local completedStacks = 0
+    
+    for _, s in ipairs(stackStack) do
+      if(s.nextRank >= 14 and s.suite ~= "F") then
+        completedStacks = completedStacks + 1
+        if completedStacks == 4 then
+          subject:notifyWin(subject.observers[1])
+          break
+        end
+      end
+    end
+    
   end  
 end
 
@@ -44,7 +56,7 @@ function GrabberClass:grab()
   self.grabPos = self.grabbedItem[#self.grabbedItem].position
   print("GRAB - " .. tostring(self.grabPos))
 end
-function GrabberClass:release(stackStack, rankRead, cardList)
+function GrabberClass:release(stackStack, rankRead, cardList, subject)
   if #self.grabbedItem == 0 then
     return
   end
@@ -53,9 +65,10 @@ function GrabberClass:release(stackStack, rankRead, cardList)
   local releasePos = self.grabPos
   
   for _, s in ipairs(stackStack) do
+    
     if s:isOver(self) and (s.suite == grabbedCard.suite or s.suite == "F") and (rankRead[s.nextRank] == grabbedCard.rank or s.suite == "F") then
       
-      if(s.suite == "F" and #s.holding > 0) then
+      if((s.suite == "F" and #s.holding > 0) or (s.suite == "F" and grabbedCard.rank ~= "K")) then
         break
       end
       

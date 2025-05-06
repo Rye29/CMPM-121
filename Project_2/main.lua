@@ -10,6 +10,8 @@ require "scripts/card"
 require "scripts/Graber"
 require "scripts/stacks"
 require "scripts/button"
+require "scripts/Observer"
+
 
 io.stdout:setvbuf("no")
 
@@ -40,6 +42,11 @@ function love.load()
 
   --creating the deck button
   deckButton = StackClass:new(20, 40, 50, 80, 0)
+  
+  winCon = ObserverClass:new()
+  winObs = SubjectClass:new()
+  winObs:subscribe(winCon)
+  --still need to pass observer to graber/release function
   
   for s = 1, #Suites do
     local stack = StackClass:new(1100, 40+(100*(s-1)), 50, 80, 1)
@@ -140,6 +147,8 @@ function love.draw()
     end
   end
   
+  
+  
   for i=#(Card_Render_Order[1]), 1, -1 do
     for j = 1, 4 do
       if not Card_Render_Order[j][i].flipped then
@@ -148,13 +157,25 @@ function love.draw()
     end
   end
   
-  
   for _, s in ipairs(Suit_Stacks) do
-    for _, h in ipairs(s.holding) do
-      h:draw()
+    if s.suite ~= "F" then
+      for _, h in ipairs(s.holding) do
+        h:draw()
+      end
     end
   end
   
+  
+  local grab = grabber.grabbedItem[1]
+  if grab ~= nil then
+    grab:draw()
+  end
+  
+  
+  if(winCon.won == true) then
+    love.graphics.setBackgroundColor( 0.5, 0, 0, 1 )
+    love.graphics.print("You Win! Press 'Reset' to play again!", 440, 250, 0, 3, 3)
+  end
   resetButton:draw()
   
   
@@ -167,7 +188,7 @@ end
 --|||||||--
 function love.update(dt)
   selectCard();
-  grabber:update(Suit_Stacks, Ranks, card_list)
+  grabber:update(Suit_Stacks, Ranks, card_list, winObs)
   tableuUpdate()
   checkForMouseMoving()
   --checks to see if the deck has been pressed (could be more optimized)
@@ -294,6 +315,8 @@ function gameReset()
     stacked.nextRank = 1
     stacked.holding = {}
   end
+  
+  winCon:reset()
   
   for _, c in ipairs(card_list) do
     c.parent = nil
