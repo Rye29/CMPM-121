@@ -54,12 +54,14 @@ function DeckClass:deckDraw(deckTable, draw_pile)
   if #deckTable == 0 then
     return
   end
-  draw_pile = {}
+  if(draw_pile == 0) then
+    draw_pile = {0, 0, 0}
+  end
   for r = 1, 3 do
     if self.deckPointer > #deckTable then
       self.deckPointer = 1
     end
-    table.insert(draw_pile, deckTable[self.deckPointer])
+    draw_pile[r] = deckTable[self.deckPointer]
     self.deckPointer = self.deckPointer + 1
   end
   --update the deck positions

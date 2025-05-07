@@ -186,7 +186,7 @@ end
 --|||||||--
 function love.update(dt)
   selectCard();
-  grabber:update(Suit_Stacks, Ranks, card_list, winObs)
+  grabber:update(Suit_Stacks, Ranks, card_list, winObs, draw_pile)
   tableuUpdate()
   checkForMouseMoving()
   

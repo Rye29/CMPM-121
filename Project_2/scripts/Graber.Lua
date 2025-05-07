@@ -23,7 +23,7 @@ function GrabberClass:new()
   return grabber
 end
 
-function GrabberClass:update(stackStack, rankRead, cardList, subject)
+function GrabberClass:update(stackStack, rankRead, cardList, subject, drawPile)
   self.currentMousePos = Vector(
     love.mouse.getX(),
     love.mouse.getY()
@@ -56,7 +56,7 @@ function GrabberClass:grab()
   self.grabPos = self.grabbedItem[#self.grabbedItem].position
   print("GRAB - " .. tostring(self.grabPos))
 end
-function GrabberClass:release(stackStack, rankRead, cardList, subject)
+function GrabberClass:release(stackStack, rankRead, cardList, subject, drawPile)
   --function completes if theres nothing grabbed
   if #self.grabbedItem == 0 then
     return
@@ -69,7 +69,7 @@ function GrabberClass:release(stackStack, rankRead, cardList, subject)
     --the stack is of the same suite and its one rank above the top card OR the stack is on the tableu
     if s:isOver(self) and (s.suite == grabbedCard.suite or s.suite == "F") and (rankRead[s.nextRank] == grabbedCard.rank or s.suite == "F") then
       --if the stack is on the tableu and it's occupied or the grabbed card isn't a King, move is invalid
-      if((s.suite == "F" and #s.holding > 0) or (s.suite == "F" and grabbedCard.rank ~= "K")) then
+      if((s.suite == "F" and #s.holding > 0) or (s.suite == "F" and grabbedCard.rank ~= "K") or (grabbedCard.child ~= nil and s.suite ~= "F")) then
         break
       end
       --if the card was previously in a tableu stack, remove it from that stack before appending to the new one
@@ -103,7 +103,10 @@ function GrabberClass:release(stackStack, rankRead, cardList, subject)
   --grabbed card is dropped over another card
   for _, c in ipairs(cardList) do
     --is over a card
-    if c:currentState() == 1 then
+    if c:currentState() == 1 and not c.isInDeck then
+      
+      
+      
       --card is opposite color
       if c.color ~= grabbedCard.color then
         local n = 1
