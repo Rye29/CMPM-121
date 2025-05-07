@@ -52,9 +52,21 @@ Postmortem:
      to be efficient such as meshes and textures
 
 -Code review summaries:
-  -Isaac Kim: -liked that I was able to separate the functionality to other files and keep main.lua relatively clean
+  -Jaren K: -liked that I was able to separate the functionality to other files and keep main.lua relatively clean
               -suggested that I redo the suite system via enumeration as opposed to a string, and that release() 
                be broken into more helper functions
-              -however, he acknowledged that it might be too late to do a complete overhaul of the release function,
-               so I added in more comments to make it more readable
+              -however, he acknowledged that it might be too late to do a complete overhaul of the release function
+            
+  -Isaac Kim:          
+            -noticed that a lot of global variables were scattered across multiple functions
+            -said that a lot of cards are related to deck behaviour, but coupling was neccesary 
+             due to the data driven approach I went with
+            -advised that I make the draw pile its own class
+            
+            
+  What I did:
+    -I added in more comments in release() to make it more readable
+    -I attempted to turn the deck into a subclass, and was mostly successful,
+     decoupling the deck from main
+               
 

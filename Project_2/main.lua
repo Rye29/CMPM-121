@@ -21,8 +21,7 @@ deck = {}
 draw_pile = {}
 Suit_Stacks = {}
 
-  Draw_Order = {Suit_Stacks, draw_pile}
-deckPointer = 1
+Draw_Order = {Suit_Stacks, draw_pile}
 
 screenWidth = 1280
 screenHeight = 720
@@ -41,7 +40,7 @@ function love.load()
   resetButton = ButtonClass:new(1200, 10, "reset", 60, 25)
 
   --creating the deck button
-  deckButton = StackClass:new(20, 40, 50, 80, 0)
+  deckButton = DeckClass:new(20, 40, 50, 80)
   
   winCon = ObserverClass:new()
   winObs = SubjectClass:new()
@@ -192,7 +191,7 @@ function love.update(dt)
   checkForMouseMoving()
   
   if deckButton:InputCheck(grabber) and canClickDeck then
-    deckDraw()
+    deckButton:deckDraw(deck, draw_pile)
     canClickDeck = false
   end
   
@@ -249,31 +248,6 @@ function selectCard()
     end
   end
   
-end
---|||||||--
---spacing--
---|||||||--
---hits the deck draw function--
-function deckDraw()
-  if #deck == 0 then
-    return
-  end
-  draw_pile = {}
-  for r = 1, 3 do
-    if deckPointer > #deck then
-      deckPointer = 1
-    end
-    table.insert(draw_pile, deck[deckPointer])
-    deckPointer = deckPointer + 1
-  end
-  --update the deck positions
-  for p = 1, #deck do
-    deck[p].position = Vector(100 + (50*p), 1000)
-  end
-  --update draw pile positions
-  for q = 1, #draw_pile do
-    draw_pile[q].position = Vector(50, 100 + (100*q))
-  end
 end
 --|||||||--
 --spacing--
