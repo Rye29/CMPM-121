@@ -73,5 +73,10 @@ Postmortem:
      decoupling the deck from main
     -ran out of time to do the enumeration system, but if final project is to come back
      here, thats the first thing I'm doing
+    -I also had to redo some position check code in order to accomodate for the change
                
-
+Final Statement: I feel really good about this project, and while it is not as optimized
+as a game of solitaire could be, I think I did a decently good job on implementing patterns
+where I saw fit in order to make the game easier to build on my end. Although, if I had more
+time I could've probably broken up the release() function into more helper functions. But I
+did reach all the old goals I set for myself last time and I think that's something to be proud of.
