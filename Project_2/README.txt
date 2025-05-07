@@ -29,6 +29,7 @@ Updated patterns:
 -flyweight data: fixed old flyweight pattern as it turned out it wasn't actually sharing the suite image assets like I thought it was
 -Subclass (but not really): I created a subclass for already existing suite piles (functionally speaking) to ensure that the tableau
 functions properly and adheres to the rules. It was originally intended to be a true subclass, but on paper it functions as more of a state
+-Subclass actual: I reimplemented the deck as a real subclass of the suite stacks, claening up the main just a little bit
 
 Postmortem:
 -When compared to the last project, a decent amount has been added and improved:
@@ -62,11 +63,15 @@ Postmortem:
             -said that a lot of cards are related to deck behaviour, but coupling was neccesary 
              due to the data driven approach I went with
             -advised that I make the draw pile its own class
-            
+  -Marcus Ochoa:
+            -said the same thing as Jaren, enumeration system would be more robust
+            -style is a little inconsistent, namely with variable names
             
   What I did:
     -I added in more comments in release() to make it more readable
     -I attempted to turn the deck into a subclass, and was mostly successful,
      decoupling the deck from main
+    -ran out of time to do the enumeration system, but if final project is to come back
+     here, thats the first thing I'm doing
                
 
