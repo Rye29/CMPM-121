@@ -20,6 +20,7 @@ card_list = {}
 deck = {}
 draw_pile = {}
 Suit_Stacks = {}
+debug = false
 
 Draw_Order = {Suit_Stacks, draw_pile}
 
@@ -115,6 +116,12 @@ function love.load()
     card_list[m].flipped = false
     card_list[m].isInDeck = true
     n = n + 1
+  end
+  
+  if debug then
+    for _, c in ipairs(card_list) do
+      c.flipped = false
+    end
   end
 end
 --|||||||--

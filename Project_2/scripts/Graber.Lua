@@ -11,6 +11,7 @@ function GrabberClass:new()
   
   grabber.grabbedItem = {}
   
+  
   grabber.previousMousePos = nil
   grabber.currentMousePos = nil
   grabber.LastCardGrabbed = nil
@@ -68,8 +69,16 @@ function GrabberClass:release(stackStack, rankRead, cardList, subject, drawPile)
   for _, s in ipairs(stackStack) do
     --the stack is of the same suite and its one rank above the top card OR the stack is on the tableu
     if s:isOver(self) and (s.suite == grabbedCard.suite or s.suite == "F") and (rankRead[s.nextRank] == grabbedCard.rank or s.suite == "F") then
+      
       --if the stack is on the tableu and it's occupied or the grabbed card isn't a King, move is invalid
       if((s.suite == "F" and #s.holding > 0) or (s.suite == "F" and grabbedCard.rank ~= "K") or (grabbedCard.child ~= nil and s.suite ~= "F")) then
+        print("Case1")
+        if (grabbedCard.child ~= nil) then
+          print("1.1")
+        end
+        if (s.suite ~= "F") then
+          print("1.2")
+        end
         break
       end
       --if the card was previously in a tableu stack, remove it from that stack before appending to the new one
@@ -91,6 +100,9 @@ function GrabberClass:release(stackStack, rankRead, cardList, subject, drawPile)
       --increments the stack rank tracker
       s.nextRank = s.nextRank + 1
       releasePos = s.position
+      if grabbedCard.parent ~= nil then
+        grabbedCard.parent.child = nil
+      end
       grabbedCard.parent = nil
       --snaps to the new stack
       self.grabbedItem[#self.grabbedItem].position = releasePos
@@ -103,6 +115,9 @@ function GrabberClass:release(stackStack, rankRead, cardList, subject, drawPile)
   --grabbed card is dropped over another card
   for _, c in ipairs(cardList) do
     --is over a card
+    if c:currentState() == 1 and c.isInDeck then
+      print("Case2")
+    end
     if c:currentState() == 1 and not c.isInDeck then
       
       
@@ -123,12 +138,15 @@ function GrabberClass:release(stackStack, rankRead, cardList, subject, drawPile)
           --clears grabbed cards prior parent
           if grabbedCard.parent ~= nil then
             grabbedCard.parent.child = nil
-            grabbedCard.parent = nil
+            print("nilled the child")
           end
+          grabbedCard.parent = nil
+
           --assigns grabbed card's new parent and the card dropped on gains a new child
           grabbedCard.parent = c
           c.child = grabbedCard
           self.lastMoveValid = true
+          grabbedCard.isInDeck = false
           grabbedCard.isInDeck = false
           --removes grabbed card from tableu stack if previously inside one
           for _, s in ipairs(stackStack) do
