@@ -300,6 +300,7 @@ function gameReset()
   
   for _, c in ipairs(card_list) do
     c.parent = nil
+    c.child = nil
     c.isInDeck = false
   end
   ShuffleDeck(card_list)
