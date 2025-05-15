@@ -8,9 +8,12 @@
 --credits: vecteezy.com and creazilla.com for card suite vector art
 require "scripts/card"
 require "scripts/Vector"
+require "scripts/deck"
+require "scripts/player"
 
-CardIntel = require("scripts/CardData")
 
+
+CardImport = require("scripts/CardData")
 
 io.stdout:setvbuf("no")
 
@@ -25,6 +28,25 @@ function love.load()
   love.window.setMode(screenWidth, screenHeight)
   love.window.setTitle("CMPM 121 Project 3: CCG - BHudick")
   
+  CardIntel = {}
+  for _, card in pairs(CardImport) do
+    table.insert(CardIntel, card)
+  end
+  
+  
+
+  print(tostring(CardIntel) .. "hi")
+ 
+  
+  
+  --x,y, activePos, handPos, deckPos, deckSize, handSize, CardPool
+  player1 = PlayerClass:new(0, 430, 600, 10, 760, 20, 7, CardIntel)
+  player1.deck:populate(20, CardIntel)
+  
+  player2 = PlayerClass:new(0, 0, 600, 10, 760, 20, 7, CardIntel)
+  player2.deck:populate(20, CardIntel)
+
+  
 end
 --|||||||--
 --spacing--
@@ -33,9 +55,9 @@ function love.draw()
   love.graphics.setBackgroundColor( 0, 0.5, 0, 1 )
   love.graphics.print("Casual Card Game", 10, 10)
   
-  for _, card in pairs(CardIntel) do
-    card:draw()
-  end
+  player1:draw()
+  player2:draw()
+  
 end
 --|||||||--
 --spacing--

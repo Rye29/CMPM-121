@@ -16,10 +16,10 @@ function CardClass:new(xPos, yPos, name, cost, text,flipped, a)
   cardClass.cost = cost
   cardClass.text = text
   
-  cardClass.size = Vector(50, 80)
+  cardClass.size = Vector(80, 130)
   
   cardClass.flipped = flipped
-  cardClass.isInDeck = false
+  cardClass.location = nil
   
   cardClass.ability = a
   
@@ -43,6 +43,8 @@ function CardClass:draw()
     love.graphics.setColor(0,0,0,1)
     love.graphics.print(self.cost, xVal, yVal)
     love.graphics.print(self.name, xVal+10, yVal+20)
+    love.graphics.print(self.text, xVal+10, yVal+40, 0, 0.8, 0.8)
+
   else
     love.graphics.setColor(0.2,0.8,0,1)
     love.graphics.rectangle("fill", xVal+5, yVal+5, Width-10, Height-10, 5, 5)
