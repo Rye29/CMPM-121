@@ -58,6 +58,6 @@ function CardClass:setOffset(x, y)
 end
 
 function CardClass:resetOffset()
-  self.drawOffest.x = 0
-  self.drawOffest.y = 0
+  self.drawOffset.x = 0
+  self.drawOffset.y = 0
 end

@@ -13,8 +13,10 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
   
   playerClass.position = Vector(xPos, yPos)
   
-  playerClass.activeCard = nil
+  playerClass.activeCard = {}
+  playerClass.selectedCard = nil
   playerClass.activePos = Vector(xPos+activeCardOffsetX, yPos+10)
+  playerClass.selectedIndex = nil
 
   playerClass.hand = {}
   playerClass.handPos = Vector(xPos+handOffsetX, yPos+150)
@@ -22,6 +24,8 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
     
   playerClass.deck = DeckClass:new(xPos+deckOffsetX, yPos+10)
   playerClass.deckPos = Vector(xPos+deckOffsetX, yPos+10)
+  playerClass.deckSize = maxDeckCards
+  playerClass.deckPointer = 1
   playerClass.discardPile = {}
 
   
@@ -31,6 +35,97 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
   
   return playerClass
 end
+
+
+function PlayerClass:CardDraw()
+  if #(self.hand) < self.handSize and self.deckPointer < self.deckSize then
+    local card = self.deck.Cards[self.deckPointer]
+    card.location = "hand"
+    card.position.x = self.handPos.x + (90*#self.hand)
+    card.position.y = self.handPos.y
+
+    table.insert(self.hand, card)
+    self.deckPointer = self.deckPointer + 1
+  else
+    print("hand is full")
+  end
+end
+
+function PlayerClass:inputUpdate(key)
+  if key == "w" then
+    print("ws in chat")
+    self:setSelectActive()
+  elseif key == "1" then
+    self:setSelect(1)
+  elseif key == "2" then
+    self:setSelect(2)
+  elseif key == "3" then
+    self:setSelect(3)
+  elseif key == "4" then
+    self:setSelect(4)
+  elseif key == "5" then
+    self:setSelect(5)
+  elseif key == "6" then
+    self:setSelect(6)
+  elseif key == "7" then
+    self:setSelect(7)
+  else
+    print("no key binded")
+  end
+end
+
+
+function PlayerClass:setSelect(index)
+  if self.selectedCard ~= nil then
+    if self.hand[index] == nil then
+      print("slot empty")
+      return
+    end
+    self.selectedCard:resetOffset()
+    self.selectedCard = self.hand[index]
+    self.hand[index]:setOffset(0, -20)
+    self.selectedIndex = index
+    print("yeah")
+  else
+    if self.hand[index] == nil then
+      print("slot empty")
+      return
+    end
+    
+    self.selectedCard = self.hand[index]
+    self.hand[index]:setOffset(0, -20)
+    self.selectedIndex = index
+
+    print("yeah")
+  end
+end
+
+function PlayerClass:setSelectActive()
+  if self.selectedCard ~= nil then
+    
+    --put the selected card in the active slot
+    self.selectedCard:resetOffset()
+    
+    self.selectedCard.position = self.activePos
+    self.selectedCard.location = "active"
+    
+    table.insert(self.activeCard, self.selectedCard)
+    
+    table.remove(self.hand, self.selectedIndex)
+    
+    self.selectedIndex = nil
+    
+    --reposition the rest of the cards
+    local i = 0
+    for _, card in ipairs(self.hand) do
+      card.position.x = self.handPos.x + (90*i)
+      i = i + 1
+    end
+    
+  end
+end
+
+
 
 function PlayerClass:draw()
   local width, height = love.graphics.getDimensions()
