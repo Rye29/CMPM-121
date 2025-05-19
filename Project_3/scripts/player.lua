@@ -1,17 +1,20 @@
 require "scripts/Vector"
 require "scripts/deck"
 require "scripts/card"
+require "scripts/Graber"
 
 
 
 PlayerClass = {}
 
 
-function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, maxHandSize, CardPool)
+function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool)
   local playerClass = {}
   setmetatable(playerClass, {__index = PlayerClass})
   
   playerClass.position = Vector(xPos, yPos)
+  
+  playerClass.grabber = GrabberClass:new()
   
   playerClass.activeCard = {}
   playerClass.selectedCard = nil
@@ -27,7 +30,7 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
   playerClass.deckSize = maxDeckCards
   playerClass.deckPointer = 1
   playerClass.discardPile = {}
-
+  playerClass.discardPos = Vector(xPos+discardOffest, yPos+150)
   
   playerClass.manaStock = 0
   playerClass.points = 0
@@ -51,10 +54,13 @@ function PlayerClass:CardDraw()
   end
 end
 
-function PlayerClass:inputUpdate(key)
+function PlayerClass:AIinputUpdate(key)
   if key == "w" then
     print("ws in chat")
     self:setSelectActive()
+  elseif key == "r" then
+    print("rs in house")
+    self:resetHand()
   elseif key == "1" then
     self:setSelect(1)
   elseif key == "2" then
@@ -76,6 +82,10 @@ end
 
 
 function PlayerClass:setSelect(index)
+  if index > #self.hand then
+    self.selectedCard = nil
+    return
+  end
   if self.selectedCard ~= nil then
     if self.hand[index] == nil then
       print("slot empty")
@@ -101,12 +111,14 @@ function PlayerClass:setSelect(index)
 end
 
 function PlayerClass:setSelectActive()
-  if self.selectedCard ~= nil then
+  
+  if self.selectedCard ~= nil and #self.activeCard < 4 then
     
     --put the selected card in the active slot
     self.selectedCard:resetOffset()
     
-    self.selectedCard.position = self.activePos
+    self.selectedCard.position.x = self.activePos.x + #self.activeCard*90
+    self.selectedCard.position.y = self.activePos.y
     self.selectedCard.location = "active"
     
     table.insert(self.activeCard, self.selectedCard)
@@ -125,6 +137,23 @@ function PlayerClass:setSelectActive()
   end
 end
 
+function PlayerClass:resetHand()
+  if #(self.activeCard) == 0 then
+    print("hand empty, nothing to reset")
+    return
+  end
+  print("function seco")
+  for i=1, #self.activeCard do
+    local card = self.activeCard[i]
+    card.location = "hand"
+    card.position.x = self.handPos.x + 90*#self.hand
+    card.position.y = self.handPos.y
+    table.insert(self.hand, card)
+    print("yurt")
+  end
+  self.activeCard = {}
+end
+
 
 
 function PlayerClass:draw()
@@ -138,7 +167,9 @@ function PlayerClass:draw()
 
   --active slot
   love.graphics.setColor(0, 0.3, 0, 1)
-  love.graphics.rectangle("fill", self.activePos.x, self.activePos.y, 80, 130, 5, 5)
+  for i=0, 3 do 
+    love.graphics.rectangle("fill", self.activePos.x+90*i, self.activePos.y, 80, 130, 5, 5)
+  end
 
   --hand slots
   love.graphics.setColor(0.3, 0, 0, 1)
@@ -153,6 +184,11 @@ function PlayerClass:draw()
   --deck pile
   love.graphics.setColor(0, 0, 0.3, 1)
   love.graphics.rectangle("fill", self.deckPos.x, self.deckPos.y, 80, 130, 5, 5)
+  
+  --discard pile
+  love.graphics.setColor(0, 0.3, 0.3, 1)
+  love.graphics.rectangle("fill", self.discardPos.x, self.discardPos.y, 80, 130, 5, 5)
+  
   
   for _, card in pairs(self.deck.Cards) do
     card:draw()

@@ -57,6 +57,10 @@ function CardClass:setOffset(x, y)
 
 end
 
+function CardClass:containsPoint(x, y)
+    return x >= self.position.x and x <= self.position.x + self.size.x and y >= self.position.y and y <= self.position.y + self.size.y
+end
+
 function CardClass:resetOffset()
   self.drawOffset.x = 0
   self.drawOffset.y = 0
