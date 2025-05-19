@@ -40,13 +40,16 @@ function love.load()
   
   
   --x,y, activePos, handPos, deckPos, deckSize, discardOffest, handSize, CardPool
-  player1 = PlayerClass:new(0, 430, 300, 10, 760, 20, 760, 7, CardIntel)
+  player1 = UserClass:new(0, 430, 300, 10, 760, 20, 760, 7, CardIntel)
   player1.deck:populate(20, CardIntel)
   for i=1, 10 do
     player1:CardDraw()
   end
-  player2 = PlayerClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel)
+  player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel)
   player2.deck:populate(20, CardIntel)
+  for i=1, 7 do
+    player2:CardDraw()
+  end
 
   
 end
@@ -65,7 +68,7 @@ end
 --spacing--
 --|||||||--
 function love.keypressed(key, scanCode, isRepeat)
-  --player1:AIinputUpdate(key)
+  player2:inputUpdate(key)
   
   print(tostring(key))
 end

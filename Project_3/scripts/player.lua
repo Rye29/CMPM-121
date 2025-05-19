@@ -13,9 +13,7 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
   setmetatable(playerClass, {__index = PlayerClass})
   
   playerClass.position = Vector(xPos, yPos)
-  
-  playerClass.grabber = GrabberClass:new()
-  
+    
   playerClass.activeCard = {}
   playerClass.selectedCard = nil
   playerClass.activePos = Vector(xPos+activeCardOffsetX, yPos+10)
@@ -40,6 +38,42 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
 end
 
 
+UserClass = PlayerClass:new(0, 0, 0, 0, 0, 0, 0, 0, {})
+
+function UserClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool)
+  self.position = Vector(xPos, yPos)
+  self.activePos = Vector(xPos+activeCardOffsetX, yPos+10)
+  self.handPos = Vector(xPos+handOffsetX, yPos+150)
+  self.deckPos = Vector(xPos+deckOffsetX, yPos+10)
+  self.discardPos = Vector(xPos+discardOffest, yPos+150)
+  self.deck.position = self.deckPos
+  
+  self.handSize = maxHandSize
+  self.deckSize = maxDeckCards
+
+  
+  self.grabber = GrabberClass:new()
+  return self
+end
+
+--resimplify this
+AIClass = PlayerClass:new(0, 0, 0, 0, 0, 0, 0, 0, {})
+
+function AIClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool)
+  self.position = Vector(xPos, yPos)
+  self.activePos = Vector(xPos+activeCardOffsetX, yPos+10)
+  self.handPos = Vector(xPos+handOffsetX, yPos+150)
+  self.deckPos = Vector(xPos+deckOffsetX, yPos+10)
+  self.discardPos = Vector(xPos+discardOffest, yPos+150)
+  self.deck.position = self.deckPos
+
+  
+  self.handSize = maxHandSize
+  self.deckSize = maxDeckCards
+  return self
+end
+
+
 function PlayerClass:CardDraw()
   if #(self.hand) < self.handSize and self.deckPointer < self.deckSize then
     local card = self.deck.Cards[self.deckPointer]
@@ -52,106 +86,6 @@ function PlayerClass:CardDraw()
   else
     print("hand is full")
   end
-end
-
-function PlayerClass:AIinputUpdate(key)
-  if key == "w" then
-    print("ws in chat")
-    self:setSelectActive()
-  elseif key == "r" then
-    print("rs in house")
-    self:resetHand()
-  elseif key == "1" then
-    self:setSelect(1)
-  elseif key == "2" then
-    self:setSelect(2)
-  elseif key == "3" then
-    self:setSelect(3)
-  elseif key == "4" then
-    self:setSelect(4)
-  elseif key == "5" then
-    self:setSelect(5)
-  elseif key == "6" then
-    self:setSelect(6)
-  elseif key == "7" then
-    self:setSelect(7)
-  else
-    print("no key binded")
-  end
-end
-
-
-function PlayerClass:setSelect(index)
-  if index > #self.hand then
-    self.selectedCard = nil
-    return
-  end
-  if self.selectedCard ~= nil then
-    if self.hand[index] == nil then
-      print("slot empty")
-      return
-    end
-    self.selectedCard:resetOffset()
-    self.selectedCard = self.hand[index]
-    self.hand[index]:setOffset(0, -20)
-    self.selectedIndex = index
-    print("yeah")
-  else
-    if self.hand[index] == nil then
-      print("slot empty")
-      return
-    end
-    
-    self.selectedCard = self.hand[index]
-    self.hand[index]:setOffset(0, -20)
-    self.selectedIndex = index
-
-    print("yeah")
-  end
-end
-
-function PlayerClass:setSelectActive()
-  
-  if self.selectedCard ~= nil and #self.activeCard < 4 then
-    
-    --put the selected card in the active slot
-    self.selectedCard:resetOffset()
-    
-    self.selectedCard.position.x = self.activePos.x + #self.activeCard*90
-    self.selectedCard.position.y = self.activePos.y
-    self.selectedCard.location = "active"
-    
-    table.insert(self.activeCard, self.selectedCard)
-    
-    table.remove(self.hand, self.selectedIndex)
-    
-    self.selectedIndex = nil
-    
-    --reposition the rest of the cards
-    local i = 0
-    for _, card in ipairs(self.hand) do
-      card.position.x = self.handPos.x + (90*i)
-      i = i + 1
-    end
-    
-  end
-end
-
-function PlayerClass:resetHand()
-  if #(self.activeCard) == 0 then
-    print("hand empty, nothing to reset")
-    return
-  end
-  print("function seco")
-  for i=1, #self.activeCard do
-    local card = self.activeCard[i]
-    card.location = "hand"
-    card.position.x = self.handPos.x + 90*#self.hand
-    card.position.y = self.handPos.y
-    table.insert(self.hand, card)
-    print("yurt")
-  end
-  self.activeCard = {}
 end
 
 
@@ -194,6 +128,105 @@ function PlayerClass:draw()
     card:draw()
   end
 
-
   return
+end
+
+
+function AIClass:inputUpdate(key)
+  if key == "w" then
+    print("ws in chat")
+    self:setSelectActive()
+  elseif key == "r" then
+    print("rs in house")
+    self:resetHand()
+  elseif key == "1" then
+    self:setSelect(1)
+  elseif key == "2" then
+    self:setSelect(2)
+  elseif key == "3" then
+    self:setSelect(3)
+  elseif key == "4" then
+    self:setSelect(4)
+  elseif key == "5" then
+    self:setSelect(5)
+  elseif key == "6" then
+    self:setSelect(6)
+  elseif key == "7" then
+    self:setSelect(7)
+  else
+    print("no key binded")
+  end
+end
+
+function AIClass:setSelect(index)
+  if index > #self.hand then
+    self.selectedCard = nil
+    return
+  end
+  if self.selectedCard ~= nil then
+    if self.hand[index] == nil then
+      print("slot empty")
+      return
+    end
+    self.selectedCard:resetOffset()
+    self.selectedCard = self.hand[index]
+    self.hand[index]:setOffset(0, -20)
+    self.selectedIndex = index
+    print("yeah")
+  else
+    if self.hand[index] == nil then
+      print("slot empty")
+      return
+    end
+    
+    self.selectedCard = self.hand[index]
+    self.hand[index]:setOffset(0, -20)
+    self.selectedIndex = index
+
+    print("yeah")
+  end
+end
+
+function AIClass:setSelectActive()
+  
+  if self.selectedCard ~= nil and #self.activeCard < 4 then
+    
+    --put the selected card in the active slot
+    self.selectedCard:resetOffset()
+    
+    self.selectedCard.position.x = self.activePos.x + #self.activeCard*90
+    self.selectedCard.position.y = self.activePos.y
+    self.selectedCard.location = "active"
+    
+    table.insert(self.activeCard, self.selectedCard)
+    
+    table.remove(self.hand, self.selectedIndex)
+    
+    self.selectedIndex = nil
+    
+    --reposition the rest of the cards
+    local i = 0
+    for _, card in ipairs(self.hand) do
+      card.position.x = self.handPos.x + (90*i)
+      i = i + 1
+    end
+    
+  end
+end
+
+function AIClass:resetHand()
+  if #(self.activeCard) == 0 then
+    print("hand empty, nothing to reset")
+    return
+  end
+  print("function seco")
+  for i=1, #self.activeCard do
+    local card = self.activeCard[i]
+    card.location = "hand"
+    card.position.x = self.handPos.x + 90*#self.hand
+    card.position.y = self.handPos.y
+    table.insert(self.hand, card)
+    print("yurt")
+  end
+  self.activeCard = {}
 end
