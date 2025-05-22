@@ -10,7 +10,7 @@ require "scripts/card"
 require "scripts/Vector"
 require "scripts/deck"
 require "scripts/player"
-
+require "scripts/GameManager"
 
 
 CardImport = require("scripts/CardData")
@@ -41,17 +41,12 @@ function love.load()
   
   --x,y, activePos, handPos, deckPos, deckSize, discardOffest, handSize, CardPool
   player1 = UserClass:new(0, 430, 300, 10, 760, 20, 760, 7, CardIntel)
-  player1.deck:populate(20, CardIntel)
-  for i=1, 10 do
-    player1:CardDraw()
-  end
-  player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel)
-  player2.deck:populate(20, CardIntel)
-  for i=1, 7 do
-    player2:CardDraw()
-  end
 
+  player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel)
   
+  manager = GameManagerClass:new({player1, player2})
+  
+  manager:gameStart(CardIntel)
 end
 --|||||||--
 --spacing--
@@ -68,15 +63,21 @@ end
 --spacing--
 --|||||||--
 function love.keypressed(key, scanCode, isRepeat)
-  player2:inputUpdate(key)
+  manager:keyUpdate(key)
+  if(key == "[") and manager.UserTurn then
+    player1:play()
+  end
   
+  if(key == "]") and not manager.UserTurn then
+    player2:play()
+  end
   print(tostring(key))
 end
 --|||||||--
 --spacing--
 --|||||||--
 function love.update(dt)
-  player1.grabber:update(player1)
+  manager:update()
   --print()
 end
 

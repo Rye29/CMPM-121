@@ -26,7 +26,6 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
   playerClass.deck = DeckClass:new(xPos+deckOffsetX, yPos+10)
   playerClass.deckPos = Vector(xPos+deckOffsetX, yPos+10)
   playerClass.deckSize = maxDeckCards
-  playerClass.deckPointer = 1
   playerClass.discardPile = {}
   playerClass.discardPos = Vector(xPos+discardOffest, yPos+150)
   
@@ -66,7 +65,6 @@ function AIClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, ma
   self.deckPos = Vector(xPos+deckOffsetX, yPos+10)
   self.discardPos = Vector(xPos+discardOffest, yPos+150)
   self.deck.position = self.deckPos
-
   
   self.handSize = maxHandSize
   self.deckSize = maxDeckCards
@@ -75,14 +73,19 @@ end
 
 
 function PlayerClass:CardDraw()
-  if #(self.hand) < self.handSize and self.deckPointer < self.deckSize then
-    local card = self.deck.Cards[self.deckPointer]
-    card.location = "hand"
-    card.position.x = self.handPos.x + (90*#self.hand)
-    card.position.y = self.handPos.y
-
+  if #(self.hand) < self.handSize then
+    local card = self.deck.Cards[1]
     table.insert(self.hand, card)
-    self.deckPointer = self.deckPointer + 1
+    table.remove(self.deck.Cards, 1)
+    card = self.hand[#self.hand]
+    card.location = "hand"
+    card.position.x = self.handPos.x + (90*#self.hand-90)
+    card.position.y = self.handPos.y
+    
+
+    for i=1, #self.deck.Cards do
+      self.deck.Cards[i].position.x = self.deckPos.x + (i*20-20)
+    end
   else
     print("hand is full")
   end
@@ -127,18 +130,51 @@ function PlayerClass:draw()
   for _, card in pairs(self.deck.Cards) do
     card:draw()
   end
+  
+  for _, card in pairs(self.hand) do
+    card:draw()
+  end
+  
+  for _, card in pairs(self.activeCard) do
+    card:draw()
+  end
+  
+  for _, card in pairs(self.discardPile) do
+    card:draw()
+  end
 
   return
 end
 
+function PlayerClass:validateActive()
+  local total = 0
+  for _, card in ipairs(self.activeCard) do
+    total = total + card.cost
+  end
+  
+  return (total <= self.manaStock and total ~= 0)
+end
+
+function PlayerClass:play()
+  if self:validateActive() then
+    print("turn ended, next player!")
+    self.turnObserver:changeTurn()
+  else
+    print("hand invalid")
+  end
+end
+
+--AI Functionality
 
 function AIClass:inputUpdate(key)
   if key == "w" then
-    print("ws in chat")
     self:setSelectActive()
   elseif key == "r" then
-    print("rs in house")
-    self:resetHand()
+    self:returnHand(1)
+  elseif key == "i" then
+    self:insertDeck(1)
+  elseif key == "d" then
+    self:discardHand(1)
   elseif key == "1" then
     self:setSelect(1)
   elseif key == "2" then
@@ -153,6 +189,8 @@ function AIClass:inputUpdate(key)
     self:setSelect(6)
   elseif key == "7" then
     self:setSelect(7)
+  elseif key == "l" then
+    print(tostring(self:validateActive()))
   else
     print("no key binded")
   end
@@ -203,7 +241,7 @@ function AIClass:setSelectActive()
     table.remove(self.hand, self.selectedIndex)
     
     self.selectedIndex = nil
-    
+    self.selectedCard = nil
     --reposition the rest of the cards
     local i = 0
     for _, card in ipairs(self.hand) do
@@ -214,19 +252,96 @@ function AIClass:setSelectActive()
   end
 end
 
-function AIClass:resetHand()
-  if #(self.activeCard) == 0 then
-    print("hand empty, nothing to reset")
+function AIClass:returnHand(count)
+  local cardCount = count
+  if(count > #self.activeCard) then
+    cardCount = #self.activeCard
+  end
+  
+  if #(self.activeCard) == 0 or #(self.hand) == self.handSize then
+    print("hand empty, nothing to return or hand is full")
     return
   end
   print("function seco")
-  for i=1, #self.activeCard do
+  for i=1, cardCount do
     local card = self.activeCard[i]
     card.location = "hand"
     card.position.x = self.handPos.x + 90*#self.hand
     card.position.y = self.handPos.y
     table.insert(self.hand, card)
-    print("yurt")
+    if #self.hand == self.handSize then
+      break
+    end
   end
-  self.activeCard = {}
+  
+  for i=1, cardCount do
+    table.remove(self.activeCard, 1)
+  end
+  
+  --reposition the rest of the cards
+  local i = 0
+  for _, card in ipairs(self.activeCard) do
+    card.position.x = self.activePos.x + (90*i)
+    i = i + 1
+  end
+end
+
+function AIClass:discardHand(count)
+  local cardCount = count
+  if(count > #self.activeCard) then
+    cardCount = #self.activeCard
+  end
+  if #(self.activeCard) == 0 then
+    print("hand empty, nothing to discard")
+    return
+  end
+  print("function delta")
+  for i=1, cardCount do
+    local card = self.activeCard[i]
+    card.location = "discard"
+    card.position.x = self.discardPos.x
+    card.position.y = self.discardPos.y
+    table.insert(self.discardPile, card)
+  end
+  
+  for i=1, cardCount do
+    table.remove(self.activeCard, 1)
+  end
+  
+  --reposition the rest of the cards
+  local i = 0
+  for _, card in ipairs(self.activeCard) do
+    card.position.x = self.activePos.x + (90*i)
+    i = i + 1
+  end
+end
+
+function AIClass:insertDeck(count)
+  local cardCount = count
+  if(count > #self.activeCard) then
+    cardCount = #self.activeCard
+  end
+  if #(self.activeCard) == 0 then
+    print("hand empty, nothing to insert")
+    return
+  end
+  print("function epsilon")
+  for i=1, cardCount do
+    local card = self.activeCard[i]
+    card.location = "deck"
+    card.position.x = self.deckPos.x + (#self.deck.Cards*20)
+    card.position.y = self.deckPos.y
+    table.insert(self.deck.Cards, card)
+  end
+  
+  for i=1, cardCount do
+    table.remove(self.activeCard, 1)
+  end
+  
+  --reposition the rest of the cards
+  local i = 0
+  for _, card in ipairs(self.activeCard) do
+    card.position.x = self.activePos.x + (90*i)
+    i = i + 1
+  end
 end
