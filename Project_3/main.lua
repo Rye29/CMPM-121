@@ -56,6 +56,7 @@ function love.draw()
   love.graphics.print("Casual Card Game", 10, 10)
   
   player1:draw()
+  player1.playButton:draw()
   player2:draw()
   
 end

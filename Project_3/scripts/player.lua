@@ -2,6 +2,7 @@ require "scripts/Vector"
 require "scripts/deck"
 require "scripts/card"
 require "scripts/Graber"
+require "scripts/button"
 
 
 
@@ -52,6 +53,7 @@ function UserClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, 
 
   
   self.grabber = GrabberClass:new()
+  self.playButton = ButtonClass:new(self.position.x+150, self.position.y+40, "Play Hand", 65, 20)
   return self
 end
 

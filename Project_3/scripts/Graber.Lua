@@ -27,6 +27,7 @@ function GrabberClass:update(player)
 
       --self:release(self.previousPos.x, self.previousPos.y)
     end
+    
   else
     if self.holding then
       self.grabbedItem.position = Vector(mouseX, mouseY)
@@ -43,6 +44,10 @@ function GrabberClass:update(player)
           self:grab(card, mouseX, mouseY)
           break
         end
+      end
+      
+      if player.playButton:checkForMouseOver() then
+        player:play()
       end
     end
     
