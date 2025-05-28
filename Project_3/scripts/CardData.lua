@@ -12,8 +12,10 @@ testerClass = CardClass:new(
     false,
     function(a, b, c)
       print("TestAbility1"..tostring(a)..tostring(b)..tostring(c))
-    end
+    end,
+    1
   )
+
 table.insert(beast, testerClass)
 
 
@@ -25,8 +27,10 @@ testerClass2 = CardClass:new(
     false,
     function(a, b, c)
       print("TestAbility2"..tostring(a)..tostring(b)..tostring(c))
-    end
+    end,
+    2
   )
+
 table.insert(beast, testerClass2)
 
 
@@ -36,10 +40,13 @@ testerClass3 = CardClass:new(
     3, 
     "test3TextDesc", 
     false,
-    function(a, b, c)
+    function(player1, player2, card)
       print("TestAbility3"..tostring(a)..tostring(b)..tostring(c))
-    end
+      card.power = card.power + 1
+    end,
+    3
   )
+
 table.insert(beast, testerClass3)
 
 return beast

@@ -83,7 +83,7 @@ function PlayerClass:CardDraw()
     card.location = "hand"
     card.position.x = self.handPos.x + (90*#self.hand-90)
     card.position.y = self.handPos.y
-    
+    card.flipped = false
 
     for i=1, #self.deck.Cards do
       self.deck.Cards[i].position.x = self.deckPos.x + (i*20-20)
@@ -127,7 +127,11 @@ function PlayerClass:draw()
   --discard pile
   love.graphics.setColor(0, 0.3, 0.3, 1)
   love.graphics.rectangle("fill", self.discardPos.x, self.discardPos.y, 80, 130, 5, 5)
-  
+  love.graphics.setColor(0, 0, 0, 1)
+  love.graphics.print(("Discard: "..tostring(#self.discardPile)), self.discardPos.x+90, self.discardPos.y+110, 0, 1.4, 1.4)
+  love.graphics.print(("Deck: "..tostring(#self.deck.Cards)), self.discardPos.x+90, self.discardPos.y+90, 0, 1.4, 1.4)
+  love.graphics.print(("Hand: "..tostring(#self.hand)), self.discardPos.x+90, self.discardPos.y+70, 0, 1.4, 1.4)
+
   
   for _, card in pairs(self.deck.Cards) do
     card:draw()
@@ -154,7 +158,7 @@ function PlayerClass:validateActive()
     total = total + card.cost
   end
   
-  return (total <= self.manaStock and total ~= 0)
+  return (total <= self.manaStock)
 end
 
 function PlayerClass:play()

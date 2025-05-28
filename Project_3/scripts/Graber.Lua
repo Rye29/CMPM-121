@@ -63,6 +63,8 @@ function GrabberClass:grab(card, mX, mY)
     print(tostring(self.previousPos.x)..", "..tostring(self.previousPos.y))
     self.grabbedItem.position = Vector(mX, mY)
     self.holding = true
+    print(tostring(self.grabbedItem.power))
+
     return true
   end
   return false

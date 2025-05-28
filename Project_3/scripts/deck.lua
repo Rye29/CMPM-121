@@ -21,7 +21,7 @@ function DeckClass:populate(count, cardDataTable)
   for i = 1, count do
     local copy = cardDataTable[3]
     local offset = 20
-    local newCard = CardClass:new(self.position.x + i*offset-offset, self.position.y, copy.name, copy.cost, copy.text, copy.flipped, copy.ability)
+    local newCard = CardClass:new(self.position.x + i*offset-offset, self.position.y, copy.name, copy.cost, copy.text, copy.flipped, copy.ability, copy.power)
     newCard.location = "deck"
     newCard.name = "test "..tostring(i)
     table.insert(self.Cards, newCard)
