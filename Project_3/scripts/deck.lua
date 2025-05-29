@@ -19,11 +19,26 @@ end
 
 function DeckClass:populate(count, cardDataTable)
   for i = 1, count do
-    local copy = cardDataTable[3]
+    local copy = cardDataTable[i]
     local offset = 20
-    local newCard = CardClass:new(self.position.x + i*offset-offset, self.position.y, copy.name, copy.cost, copy.text, copy.flipped, copy.ability, copy.power)
+    local newCard = CardClass:new(self.position.x, self.position.y, copy.name, copy.cost, copy.text, copy.flipped, copy.ability, copy.power)
+    newCard.flipped = true
+    local newCard2 = CardClass:new(self.position.x, self.position.y, copy.name, copy.cost, copy.text, copy.flipped, copy.ability, copy.power)
     newCard.location = "deck"
-    newCard.name = "test "..tostring(i)
+    newCard2.location = "deck"
+    newCard2.flipped = true
+    --newCard.name = "test "..tostring(i)
     table.insert(self.Cards, newCard)
+    table.insert(self.Cards, newCard2)
+
   end
+  ShuffleDeck(self.Cards)
+end
+
+function ShuffleDeck(tab)
+    local i
+    for i = #tab, 1, -1 do
+      local j = math.random(i)
+      tab[i], tab[j] = tab[j], tab[i]
+    end
 end

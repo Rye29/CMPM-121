@@ -1,7 +1,7 @@
 GameManagerClass = {}
 
 
-function GameManagerClass:new(playerTable)
+function GameManagerClass:new(playerTable, score)
   local managerClass = {}
   
   setmetatable(managerClass, {__index = GameManagerClass})
@@ -11,6 +11,8 @@ function GameManagerClass:new(playerTable)
   managerClass.players = playerTable
   managerClass.UserTurn = true
   managerClass.lastWinner = nil
+  managerClass.winner = " "
+  managerClass.winScore = score
   
   managerClass.waiting = false
   managerClass.waiter = 0
@@ -27,14 +29,14 @@ function GameManagerClass:new(playerTable)
  end
  
 function GameManagerClass:gameStart(CardIntel, VanillaIntel)
-  self.Cycle = 3
+  self.Cycle = 1
   self.UserTurn = true
   for _, player in ipairs(self.players) do
     player.discardPile = {}
     player.activeCard = {}
     player.hand = {}
     player.deck.Cards = {}
-    player.deck:populate(20, CardIntel)
+    player.deck:populate(#CardIntel, CardIntel)
     local j = 1
     for _, card in ipairs(VanillaIntel) do
       local newCard = CardClass:new(card.position.x, card.position.y, card.name, card.cost, card.text, card.flipped, card.ability, card.power)
@@ -42,28 +44,44 @@ function GameManagerClass:gameStart(CardIntel, VanillaIntel)
       table.insert(player.deck.Cards, j, newCard)
       j = j + 1
     end
+    
+    
     for i=1, 3 do
-      player:CardDraw()
+      player:CardDraw(false)
     end
     player.manaStock = self.Cycle
     player.points = 0
     player.turnObserver = self.Observers[1]
   end
+  
+  for _, card in ipairs(self.players[2].hand) do
+    card.flipped = true
+  end
+  self.players[1]:CardDraw(false)
+
+  self.winner = " "
 end
 
 function GameManagerClass:update(dt)
   --print(tostring(dt))
-  if self.UserTurn == true then
-    self.players[1].grabber:update(self.players[1])
-  end
+  if self.winner == " " then
+    if self.UserTurn == true then
+      self.players[1].grabber:update(self.players[1])
+    end
   
-  if self.UserTurn == nil then
-    if self.waiting == false then
-      self.eventQueue[1]()
-      table.remove(self.eventQueue, 1)
-    else
-      --print("waiting")
-      self:wait(0.75, dt)
+    if self.UserTurn == nil then
+      
+      for _, card in ipairs(player2.hand) do
+        card.flipped = true
+      end
+      
+      if self.waiting == false then
+        self.eventQueue[1]()
+        table.remove(self.eventQueue, 1)
+      else
+        --print("waiting")
+        self:wait(0.75, dt)
+      end
     end
   end
   
@@ -106,10 +124,10 @@ function ObserverClass:changeTurn()
       first = 2
     end
     
-    table.insert(manager.eventQueue, function() manager:flipCards(manager.players[1], false) end)
-    table.insert(manager.eventQueue, function() manager:flipCards(manager.players[2], true) end)
+    table.insert(manager.eventQueue, function() manager:flipCards(manager.players[1], true) end)
+    --table.insert(manager.eventQueue, function() manager:flipCards(manager.players[2], true) end)
 
-      
+    
     if first == 1 then
       table.insert(manager.eventQueue, function() manager:flipCards(manager.players[1], true) end)
       table.insert(manager.eventQueue, function() manager:playCards(manager.players[1], manager.players[2]) end)
@@ -130,17 +148,18 @@ end
 
 function aiBehaviour(manager)
   local card_count = math.floor(math.random(1,5))
+  manager.players[2]:CardDraw(true)
     if card_count < 1 then
       card_count = 1
     end
     for i=1, card_count do
       local cos = 0
-      print("ai iter")
+      --print("ai iter")
       for _, card in ipairs(manager.players[2].activeCard) do
         cos = cos + card.cost
       end
       if #manager.players[2].activeCard == (4) or manager.players[2].hand[1].cost + cos > manager.players[2].manaStock then
-        print("ai break")
+        --print("ai break")
         break
       end
       
@@ -165,7 +184,7 @@ function GameManagerClass:playCards(player1, player2)
     card.flipped = false
     card.ability(player1,player2,card)
   end
-  print("event finished")
+  print("played cards")
   self.waiting = true
   print(tostring(self.waiting))
 end
@@ -174,6 +193,8 @@ function GameManagerClass:flipCards(player, wait)
   for _, card in ipairs(player.activeCard) do
     card.flipped = not card.flipped
   end
+  print("flipping cards")
+
   if wait then
     self.waiting = true
   end
@@ -203,10 +224,6 @@ function GameManagerClass:finishCycle()
   else
     self.lastWinner = nil
   end
-  
-  self.players[1]:CardDraw()
-  self.players[2]:CardDraw()
-
   self.players[2]:returnHand(#self.players[2].activeCard)
   
   
@@ -216,7 +233,19 @@ function GameManagerClass:finishCycle()
     print("discarded ai")
   end
   
+  for _, card in ipairs(self.players[2].hand) do
+    card.flipped = true
+  end
+  
+  if self.players[1].points >= self.winScore then
+    self.winner = "Player"
+  elseif self.players[2].points >= self.winScore then
+    self.winner = "AI"
+  end
+  
   print("cycle finished!")
+  self.players[1]:CardDraw(false)
+
   self.UserTurn = true
   self.Cycle = self.Cycle + 1
   for _, player in ipairs(self.players) do

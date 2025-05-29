@@ -141,7 +141,7 @@ function GrabberClass:validatePos(player, mouseX, mouseY)
 
   
   --put in deck
-  self:insertPile(player.deck.Cards, player.deckPos, 20, player, "deck", mouseX, mouseY)
+  self:insertPile(player.deck.Cards, player.deckPos, 0, player, "deck", mouseX, mouseY)
   
   
   --nowhere valid

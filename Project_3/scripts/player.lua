@@ -74,7 +74,7 @@ function AIClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, ma
 end
 
 
-function PlayerClass:CardDraw()
+function PlayerClass:CardDraw(flipped)
   if #(self.hand) < self.handSize then
     local card = self.deck.Cards[1]
     table.insert(self.hand, card)
@@ -83,11 +83,9 @@ function PlayerClass:CardDraw()
     card.location = "hand"
     card.position.x = self.handPos.x + (90*#self.hand-90)
     card.position.y = self.handPos.y
-    card.flipped = false
+    card.flipped = flipped
 
-    for i=1, #self.deck.Cards do
-      self.deck.Cards[i].position.x = self.deckPos.x + (i*20-20)
-    end
+    
   else
     print("hand is full")
   end
@@ -118,7 +116,7 @@ function PlayerClass:draw()
   
   --score/mana
   love.graphics.print(("Mana: "..tostring(self.manaStock)), self.position.x+5, self.position.y+5, 0, 1.4, 1.4)
-  love.graphics.print(("Points: "..tostring(self.points)), self.position.x+1200, self.position.y+260, 0, 1.4, 1.4)
+  love.graphics.print(("Points: "..tostring(self.points)), self.position.x+1180, self.position.y+260, 0, 1.4, 1.4)
 
   --deck pile
   love.graphics.setColor(0, 0, 0.3, 1)
@@ -147,6 +145,7 @@ function PlayerClass:draw()
   
   for _, card in pairs(self.discardPile) do
     card:draw()
+    break
   end
 
   return
@@ -292,7 +291,7 @@ function AIClass:returnHand(count)
   end
 end
 
-function AIClass:discardHand(count)
+function PlayerClass:discardHand(count)
   local cardCount = count
   if(count > #self.activeCard) then
     cardCount = #self.activeCard
@@ -308,6 +307,7 @@ function AIClass:discardHand(count)
     card.position.x = self.discardPos.x
     card.position.y = self.discardPos.y
     table.insert(self.discardPile, card)
+    card.flipped = true
   end
   
   for i=1, cardCount do
@@ -322,7 +322,7 @@ function AIClass:discardHand(count)
   end
 end
 
-function AIClass:insertDeck(count)
+function PlayerClass:insertDeck(count)
   local cardCount = count
   if(count > #self.activeCard) then
     cardCount = #self.activeCard
@@ -335,7 +335,7 @@ function AIClass:insertDeck(count)
   for i=1, cardCount do
     local card = self.activeCard[i]
     card.location = "deck"
-    card.position.x = self.deckPos.x + (#self.deck.Cards*20)
+    card.position.x = self.deckPos.x
     card.position.y = self.deckPos.y
     table.insert(self.deck.Cards, card)
   end

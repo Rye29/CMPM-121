@@ -54,7 +54,7 @@ function CardClass:draw()
     
     love.graphics.setColor(0,0,0,1)
     love.graphics.print(self.name, xVal+10, yVal+20)
-    love.graphics.print(self.text, xVal+10, yVal+40, 0, 0.8, 0.8)
+    love.graphics.print(self.text, xVal+10, yVal+40, 0, 0.6, 0.6)
 
   else
     love.graphics.setColor(0.2,0.8,0,1)

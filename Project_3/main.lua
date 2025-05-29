@@ -48,7 +48,7 @@ function love.load()
 
   player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel)
   
-  manager = GameManagerClass:new({player1, player2})
+  manager = GameManagerClass:new({player1, player2}, 20)
   
   manager:gameStart(CardIntel, VanillaIntel)
 end
@@ -71,8 +71,10 @@ function love.draw()
   else
     love.graphics.print("Action phase" , 10, 350, 0, 2, 2)
   end
-
   
+  if manager.winner ~= " " then
+    love.graphics.print(manager.winner.." has won! Press 'r' to play again!" , 300, 350, 0, 3, 3)
+  end
 end
 --|||||||--
 --spacing--
@@ -87,3 +89,10 @@ end
 --|||||||--
 --spacing--
 --|||||||--
+function love.keypressed(key)
+  if manager.winner ~= " " then
+    if key == 'r' then
+      manager:gameStart(CardIntel, VanillaIntel)
+    end
+  end
+end
