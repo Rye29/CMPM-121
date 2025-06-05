@@ -12,22 +12,46 @@ function GrabberClass:new()
   grabber.grabbedItem = nil
   grabber.previousPos = Vector(0, 0)
   grabber.holding = false
+  grabber.enlarge = nil
+  
   return grabber
 end
 
 function GrabberClass:update(player)
   local mouseX, mouseY = love.mouse.getPosition()
-  local buttonDown = love.mouse.isDown(1)
-  if not buttonDown then
+  local buttonDown1 = love.mouse.isDown(1)
+  local buttonDown2 = love.mouse.isDown(2)
+
+  if not buttonDown1 and not buttonDown2 then
+    self.enlarge = nil
     if self.grabbedItem ~= nil then
       --validation function insert here
       self:validatePos(player, mouseX, mouseY)
+      
       --print("hand: "..tostring(#player.hand))
       --print("active: "..tostring(#player.activeCard))
 
       --self:release(self.previousPos.x, self.previousPos.y)
     end
-    
+  elseif buttonDown2 and not buttonDown1 then
+    if self.enlarge ~= nil then
+      return
+    end
+    for _, card in ipairs(player.hand) do
+      if card:containsPoint(mouseX, mouseY) and card.location ~= nil then
+        self.enlarge = card
+        print(self.enlarge.name)
+        break
+      end
+    end
+      
+    for _, card in ipairs(player.activeCard) do
+      if card:containsPoint(mouseX, mouseY) and card.location ~= nil then
+        self.enlarge = card
+        print(self.enlarge.name)
+        break
+      end
+    end
   else
     if self.holding then
       self.grabbedItem.position = Vector(mouseX, mouseY)
@@ -194,5 +218,49 @@ function GrabberClass:insertPile(targetPile, targetPos, targetPosOffset, player,
     end
   end
   
-  
 end
+
+function GrabberClass:draw()
+    if self.enlarge == nil then
+      return
+    end
+    local font = love.graphics.newFont("greek.ttf", 25)
+    love.graphics.setFont(font)
+
+    if self.enlarge.flipped then
+      return
+    end
+    local card = self.enlarge
+    
+    local Width = card.size.x
+    local Height = card.size.y
+    local card_scale = 0.03
+    local card_thickness = 2
+    
+    local card_increase_x = 60
+    local card_increase_y = 80
+
+    
+    local xVal = card.drawOffset.x+ card.position.x
+    local yVal = card_increase_y+ card.position.y
+
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.rectangle("fill", xVal-card_thickness/2, yVal-card_thickness/2 - card_increase_y*2, 
+    Width+card_thickness + card_increase_x, Height+card_thickness + card_increase_y, 5, 5)
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.rectangle("fill", xVal, yVal - card_increase_y*2, Width+ card_increase_x, Height + card_increase_y, 5, 5)
+    
+    love.graphics.setColor(0,0,1,1)
+    love.graphics.print(card.cost, xVal, yVal-card_increase_y*2)
+    
+    love.graphics.setColor(1,0,0,1)
+    love.graphics.print(card.power, xVal+card_increase_x*1.8, yVal-card_increase_y*2)
+    
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.print(card.name, xVal+card_increase_x*0.25, yVal-card_increase_y*1.6)
+    love.graphics.print(card.text, xVal+card_increase_x*0.25, yVal-card_increase_y, 0, 0.6, 0.6)
+    
+    local font2 = love.graphics.newFont("greek.ttf", 15)
+    love.graphics.setFont(font2)
+    
+  end

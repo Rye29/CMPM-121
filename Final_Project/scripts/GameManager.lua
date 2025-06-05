@@ -1,7 +1,7 @@
 GameManagerClass = {}
 
 
-function GameManagerClass:new(playerTable, score)
+function GameManagerClass:new(playerTable, score, notif)
   local managerClass = {}
   
   setmetatable(managerClass, {__index = GameManagerClass})
@@ -17,6 +17,8 @@ function GameManagerClass:new(playerTable, score)
   managerClass.waiting = false
   managerClass.waiter = 0
   managerClass.eventQueue = {}
+  
+  managerClass.notification = notif
   
   managerClass.playerPower = 0
   managerClass.aiPower = 0
@@ -218,11 +220,15 @@ function GameManagerClass:finishCycle()
   if score3 > 0 then
     self.lastWinner = self.players[2]
     self.players[2].points = self.players[2].points + math.abs(score3)
+    self.notification:activate("AI wins this round! They earned:\n"..tostring(math.abs(score3)).." points", 1, 3)
   elseif score3 < 0 then
     self.lastWinner = self.players[1]
     self.players[1].points = self.players[1].points + math.abs(score3)
+    self.notification:activate("Player takes the round! They earned:\n"..tostring(math.abs(score3)).." points", 1, 3)
   else
     self.lastWinner = nil
+    self.notification:activate("Tie! No points Awarded", 1, 3)
+
   end
   self.players[2]:returnHand(#self.players[2].activeCard)
   

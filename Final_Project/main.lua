@@ -10,7 +10,9 @@ require "scripts/card"
 require "scripts/Vector"
 require "scripts/deck"
 require "scripts/player"
+require "scripts/Graber"
 require "scripts/GameManager"
+require "scripts/notification"
 
 
 CardImport = require("scripts/CardData")
@@ -44,16 +46,18 @@ function love.load()
 
   print(tostring(CardIntel) .. "hi")
  
-  
+  notif = NotificationClass:new(980, 320, 330, 70)
+  --notif:activate("test", 1, 4)
   
   --x,y, activePos, handPos, deckPos, deckSize, discardOffest, handSize, CardPool
-  player1 = UserClass:new(0, 430, 300, 10, 760, 20, 760, 7, CardIntel)
+  player1 = UserClass:new(0, 430, 300, 10, 760, 20, 760, 7, CardIntel, notif)
 
-  player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel)
+  player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel, notif)
   
-  manager = GameManagerClass:new({player1, player2}, 20)
+  manager = GameManagerClass:new({player1, player2}, 20, notif)
   
   manager:gameStart(CardIntel, VanillaIntel)
+  
 end
 --|||||||--
 --spacing--
@@ -74,6 +78,10 @@ function love.draw()
   else
     love.graphics.print("Action phase" , 10, 350, 0, 2, 2)
   end
+  if player1.grabber then
+    player1.grabber:draw()
+  end
+  notif:draw()
   
   if manager.winner ~= " " then
     love.graphics.print(manager.winner.." has won! Press 'r' to play again!" , 300, 350, 0, 3, 3)

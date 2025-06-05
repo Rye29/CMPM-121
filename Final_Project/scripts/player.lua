@@ -3,17 +3,18 @@ require "scripts/deck"
 require "scripts/card"
 require "scripts/Graber"
 require "scripts/button"
-
+require "scripts/notification"
 
 
 PlayerClass = {}
 
 
-function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool)
+function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool, notif)
   local playerClass = {}
   setmetatable(playerClass, {__index = PlayerClass})
   
   playerClass.position = Vector(xPos, yPos)
+  playerClass.notification = notif
     
   playerClass.activeCard = {}
   playerClass.selectedCard = nil
@@ -38,15 +39,16 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
 end
 
 
-UserClass = PlayerClass:new(0, 0, 0, 0, 0, 0, 0, 0, {})
+UserClass = PlayerClass:new(0, 0, 0, 0, 0, 0, 0, 0, {}, nil)
 
-function UserClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool)
+function UserClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool, notif)
   self.position = Vector(xPos, yPos)
   self.activePos = Vector(xPos+activeCardOffsetX, yPos+10)
   self.handPos = Vector(xPos+handOffsetX, yPos+150)
   self.deckPos = Vector(xPos+deckOffsetX, yPos+10)
   self.discardPos = Vector(xPos+discardOffest, yPos+150)
   self.deck.position = self.deckPos
+  self.notification = notif
   
   self.handSize = maxHandSize
   self.deckSize = maxDeckCards
@@ -58,15 +60,16 @@ function UserClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, 
 end
 
 --resimplify this
-AIClass = PlayerClass:new(0, 0, 0, 0, 0, 0, 0, 0, {})
+AIClass = PlayerClass:new(0, 0, 0, 0, 0, 0, 0, 0, {}, nil)
 
-function AIClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool)
+function AIClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, maxDeckCards, discardOffest, maxHandSize, CardPool, notif)
   self.position = Vector(xPos, yPos)
   self.activePos = Vector(xPos+activeCardOffsetX, yPos+10)
   self.handPos = Vector(xPos+handOffsetX, yPos+150)
   self.deckPos = Vector(xPos+deckOffsetX, yPos+10)
   self.discardPos = Vector(xPos+discardOffest, yPos+150)
   self.deck.position = self.deckPos
+  self.notification = notif
   
   self.handSize = maxHandSize
   self.deckSize = maxDeckCards
@@ -166,6 +169,7 @@ function PlayerClass:play()
     self.turnObserver:changeTurn()
   else
     print("hand invalid")
+    self.notification:activate("Not Enough Mana", 1, 2)
   end
 end
 
