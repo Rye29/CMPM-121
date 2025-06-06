@@ -100,24 +100,26 @@ function PlayerClass:draw()
   local width, height = love.graphics.getDimensions()
   local borderWidth = 5
   --main board
-  love.graphics.setColor(0, 0.3, 0, 1)
+  love.graphics.setColor(65/255, 33/255, 28/255, 1)
   love.graphics.rectangle("fill", self.position.x, self.position.y, width, height*0.4, 5, 5)
-  love.graphics.setColor(0, 0.5, 0, 1)
+  love.graphics.setColor(131/255, 66/255, 53/255, 1)
   love.graphics.rectangle("fill", self.position.x+borderWidth, self.position.y+borderWidth, width-(borderWidth*2), height*0.4-(borderWidth*2), 5, 5)
 
   --active slot
-  love.graphics.setColor(0, 0.3, 0, 1)
+  love.graphics.setColor(0.3, 0, 0, 1)
   for i=0, 3 do 
     love.graphics.rectangle("fill", self.activePos.x+90*i, self.activePos.y, 80, 130, 5, 5)
   end
 
   --hand slots
-  love.graphics.setColor(0.3, 0, 0, 1)
+  love.graphics.setColor(0.2, 0.2, 0.3, 1)
+
   for i = 0, self.handSize-1 do
     love.graphics.rectangle("fill", self.handPos.x+90*i, self.handPos.y, 80, 130, 5, 5)
   end
   
   --score/mana
+  love.graphics.setColor(255/255, 204/255, 23/255, 1)
   love.graphics.print(("Mana: "..tostring(self.manaStock)), self.position.x+5, self.position.y+5, 0, 1.4, 1.4)
   love.graphics.print(("Points: "..tostring(self.points)), self.position.x+1180, self.position.y+260, 0, 1.4, 1.4)
 
@@ -126,7 +128,7 @@ function PlayerClass:draw()
   love.graphics.rectangle("fill", self.deckPos.x, self.deckPos.y, 80, 130, 5, 5)
   
   --discard pile
-  love.graphics.setColor(0, 0.3, 0.3, 1)
+  love.graphics.setColor(0.15, 0.15, 0.15, 1)
   love.graphics.rectangle("fill", self.discardPos.x, self.discardPos.y, 80, 130, 5, 5)
   love.graphics.setColor(0, 0, 0, 1)
   love.graphics.print(("Discard: "..tostring(#self.discardPile)), self.discardPos.x+90, self.discardPos.y+110, 0, 1.4, 1.4)

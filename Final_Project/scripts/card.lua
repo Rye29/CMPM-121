@@ -42,22 +42,26 @@ function CardClass:draw()
 
   love.graphics.setColor(0,0,0,1)
   love.graphics.rectangle("fill", xVal-card_thickness/2, yVal-card_thickness/2, Width+card_thickness, Height+card_thickness, 5, 5)
-  love.graphics.setColor(1,1,1,1)
+  love.graphics.setColor(255/255, 204/255, 23/255, 1)
   love.graphics.rectangle("fill", xVal, yVal, Width, Height, 5, 5)
   
   if not self.flipped then
+    love.graphics.setColor(186/255, 108/255, 60/255,1)
+    love.graphics.rectangle("fill", xVal+5, yVal+5, Width-10, Height-10, 5, 5)
+
+    
     love.graphics.setColor(0,0,1,1)
-    love.graphics.print(self.cost, xVal, yVal)
+    love.graphics.print(self.cost, xVal+5, yVal+5)
     
     love.graphics.setColor(1,0,0,1)
-    love.graphics.print(self.power, xVal+60, yVal)
+    love.graphics.print(self.power, xVal+65, yVal+5)
     
     love.graphics.setColor(0,0,0,1)
     love.graphics.print(self.name, xVal+10, yVal+20)
     love.graphics.print(self.text, xVal+10, yVal+40, 0, 0.6, 0.6)
 
   else
-    love.graphics.setColor(0.2,0.8,0,1)
+    love.graphics.setColor(128/255, 47/255, 29/255, 1)
     love.graphics.rectangle("fill", xVal+5, yVal+5, Width-10, Height-10, 5, 5)
   end
 end

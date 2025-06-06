@@ -247,14 +247,17 @@ function GrabberClass:draw()
     love.graphics.setColor(0,0,0,1)
     love.graphics.rectangle("fill", xVal-card_thickness/2, yVal-card_thickness/2 - card_increase_y*2, 
     Width+card_thickness + card_increase_x, Height+card_thickness + card_increase_y, 5, 5)
-    love.graphics.setColor(1,1,1,1)
+    love.graphics.setColor(255/255, 204/255, 23/255, 1)
     love.graphics.rectangle("fill", xVal, yVal - card_increase_y*2, Width+ card_increase_x, Height + card_increase_y, 5, 5)
     
+    love.graphics.setColor(186/255, 108/255, 60/255,1)
+    love.graphics.rectangle("fill", xVal+5, yVal - card_increase_y*1.9, Width+ card_increase_x*0.8, Height + card_increase_y*0.8, 5, 5)
+    
     love.graphics.setColor(0,0,1,1)
-    love.graphics.print(card.cost, xVal, yVal-card_increase_y*2)
+    love.graphics.print(card.cost, xVal+5, yVal-card_increase_y*1.9)
     
     love.graphics.setColor(1,0,0,1)
-    love.graphics.print(card.power, xVal+card_increase_x*1.8, yVal-card_increase_y*2)
+    love.graphics.print(card.power, xVal+card_increase_x*1.9, yVal-card_increase_y*1.9)
     
     love.graphics.setColor(0,0,0,1)
     love.graphics.print(card.name, xVal+card_increase_x*0.25, yVal-card_increase_y*1.6)

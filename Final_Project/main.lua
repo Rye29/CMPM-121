@@ -63,7 +63,7 @@ end
 --spacing--
 --|||||||--
 function love.draw()
-  love.graphics.setBackgroundColor( 0, 0.5, 0, 1 )
+  love.graphics.setBackgroundColor( 112/255, 54/225, 43/225, 1 )
   love.graphics.print("Challengers of Athens", 10, 10)
   
   player1:draw()
