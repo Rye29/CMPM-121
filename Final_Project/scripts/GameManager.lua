@@ -27,6 +27,9 @@ function GameManagerClass:new(playerTable, score, notif)
   managerClass.Observers = {}
   local turnObserver = ObserverClass:new(managerClass)
   table.insert(managerClass.Observers, turnObserver)
+  
+  managerClass.tutorial = false
+  
   return managerClass
  end
  
@@ -66,6 +69,10 @@ end
 
 function GameManagerClass:update(dt)
   --print(tostring(dt))
+  if self.tutorial == true then
+    return
+  end
+  
   if self.winner == " " then
     if self.UserTurn == true then
       self.players[1].grabber:update(self.players[1])
@@ -265,4 +272,29 @@ function GameManagerClass:wait(waitTime, dt)
     self.waiting = false
     self.waiter = 0
   end
+end
+
+function GameManagerClass:tutorialDraw()
+  love.graphics.setColor(255/255, 204/255, 23/255, 1)
+  love.graphics.rectangle("fill", 100, 50, 1080, 620, 5, 5)
+  love.graphics.setColor(112/255, 54/225, 43/225, 1)
+  love.graphics.rectangle("fill", 105, 55, 1070, 610, 5, 5)
+  love.graphics.setColor(0, 0, 0, 1)
+  love.graphics.print("Welcome to Challengers of Athens!\n-Using your M1 button, you can drag cards to and from your hand(blue background)", 120, 75)
+  love.graphics.print("to your stage(red), discard(gray/black), or your deck(face down card) on the bottom side of the screen", 120, 115)
+    
+  love.graphics.print("-The stage(red) is where each player puts all cards they want to play for that round,", 120, 135)
+  love.graphics.print("only limited to up to 4 cards and the current mana stock, which reflects the current turn cycle count,", 120, 150)
+  love.graphics.print("each player may stage any combo of cards in their hand and press play but must either return them", 120, 165)
+  love.graphics.print("to their hand, place the card in their deck, or discard after the round ends. Cumulative card cost must not exceed mana stock in the upper left corner of your placemat. Just like the hand, you may drag cards to and from here during your turn.",120, 180)
+
+  love.graphics.print("-The Grey pile is the discard pile: if you drag anything in here, you cannot get it back for\n the rest of the game so be cautious", 120, 200)
+    
+  love.graphics.print("-The face down card represents your deck where you'll automatically draw a card at\nthe begininng of each round. You may also insert a card into the bottom of it by\ndragging and releasing a card over it.", 120, 245)
+    
+  love.graphics.print("-Finally, the blue slots represent your hand. Cards automatically go here when drawn from the deck, if full any card draw is skipped.", 120, 315)
+    
+  love.graphics.print("-Each card has a power level(red number), a cost to be played(blue number), and an ability represented as text .", 120, 350)
+    
+  love.graphics.print("-During the staging phase, each player puts their cards upfront, facedown\nthen comes the action phase where both sides flip all their cards\neach card has an ability that's played when flipped face up,\neach player's cards' power is adjusted accordingly. Whovever has the most power\nwins that round and receives points based on how much more power the winner has.\nFor example: in a battle of 5 power vs 8 power, the winner receives 3 points.\nThis continues until one player reaches 20 points and is declared the winner", 120, 380)
 end

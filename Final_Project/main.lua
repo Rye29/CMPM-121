@@ -83,6 +83,10 @@ function love.draw()
   end
   notif:draw()
   
+  if manager.tutorial == true then
+    manager:tutorialDraw()
+  end
+  
   if manager.winner ~= " " then
     love.graphics.print(manager.winner.." has won! Press 'r' to play again!" , 300, 350, 0, 3, 3)
   end
@@ -106,4 +110,10 @@ function love.keypressed(key)
       manager:gameStart(CardIntel, VanillaIntel)
     end
   end
+end
+
+function love.keyreleased(key)
+   if key == "i" then
+      manager.tutorial = not manager.tutorial
+   end
 end
