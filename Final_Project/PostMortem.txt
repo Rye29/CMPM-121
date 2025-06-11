@@ -1,0 +1,40 @@
+Working on this project has been a little rough, simply because I feel
+that working with an entirely new language with quirks that go against
+some practices I built in other languages, such as indexing at 0 instead of 1 first.
+
+I personally think that this project is still an overall imporvement compared to projects 
+1 and 2, as I was able to create a system where the cards where even more modular and decoupled
+from the actual game itself. My current project has things like a game manager to better access
+players and data as my older projects did not. The last game I worked on outside this class didn't
+really use the patterns taught in class as robustly as I am now.
+
+As mentioned earlier, I'm pretty proud of myself for coming up with the card and deck system and how it
+can be pretty much taken to another lua project and modified with ease. My entire design goal
+was to create code components in a hierarchy fashion: manager->players->hand/deck/discard/stage->card->card data
+where nothing in front would have to access what's behind it to make the game function,
+and with few exceptions such as the notification system, I'm glad I was able to meet that design goal.
+
+One thing in particular that I'm still not too proud of was probably the grabber,
+as it's only improved a little bit since project 1. I figured since the professor
+kept telling us that when it came to certain features that it's best to just get it
+over the finish line, that part wasn't really built for modularity. Looking back
+on this project, everything else was built to be modular but the player's grabber
+was put together just to keep the workflow moving, as I had misread the instructions
+at first and created a more compact keyboard based system but ended up scrapping it
+due to the project requirements.
+
+When it comes to working on something like this again, I'd would definitely want to
+because in terms of actually creating, it has the potential to be incredibly robust.
+Granted, because this game has a lot of systems that require a lot of basic parts such 
+as Vectors and sprite renderers that need to be built from the ground up, and it 
+definitely would be a lot more effective to code something like this in Unity
+or another engine where that bulk work is already done.
+
+Circling back to the grabber, I feel like I kind of acknowledged the problem but not
+really proposed any solutions, so here's what I'd do: instead of hard coding the drop area
+for each stack, I'd make a stack object kind of like how I did in projects 1 and 2, which now
+has me thinking, why didn't I just do this in the first place if I already had the basic components
+written. Anyway, there'd be a pass in the update which checks if the mouse is over a stack and then stores
+that location somewhere in the grabber component. Table manipulation wouldn't be too different on how it is now: 
+store the card's index value in the current stack it's located in, copy it to the stack I'm dropping it in and 
+popping it out of its original stack.

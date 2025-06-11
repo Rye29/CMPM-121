@@ -89,10 +89,6 @@ function PlayerClass:CardDraw(flipped)
     card.position.x = self.handPos.x + (90*#self.hand-90)
     card.position.y = self.handPos.y
     card.flipped = flipped
-
-    
-  else
-    print("hand is full")
   end
 end
 
@@ -177,15 +173,12 @@ end
 
 function PlayerClass:play()
   if self:validateActive() then
-    print("turn ended, next player!")
     self.turnObserver:changeTurn()
   else
-    print("hand invalid")
     self.notification:activate("Not Enough Mana", 1, 2)
   end
 end
 
---AI Functionality
 
 function AIClass:inputUpdate(key)
   if key == "w" then
@@ -210,10 +203,8 @@ function AIClass:inputUpdate(key)
     self:setSelect(6)
   elseif key == "7" then
     self:setSelect(7)
-  elseif key == "l" then
-    print(tostring(self:validateActive()))
   else
-    print("no key binded")
+    return
   end
 end
 
@@ -224,17 +215,14 @@ function AIClass:setSelect(index)
   end
   if self.selectedCard ~= nil then
     if self.hand[index] == nil then
-      print("slot empty")
       return
     end
     self.selectedCard:resetOffset()
     self.selectedCard = self.hand[index]
     self.hand[index]:setOffset(0, -20)
     self.selectedIndex = index
-    print("yeah")
   else
     if self.hand[index] == nil then
-      print("slot empty")
       return
     end
     
@@ -242,7 +230,6 @@ function AIClass:setSelect(index)
     self.hand[index]:setOffset(0, -20)
     self.selectedIndex = index
 
-    print("yeah")
   end
 end
 
@@ -280,10 +267,8 @@ function AIClass:returnHand(count)
   end
   
   if #(self.activeCard) == 0 or #(self.hand) == self.handSize then
-    print("hand empty, nothing to return or hand is full")
     return
   end
-  print("function seco")
   for i=1, cardCount do
     local card = self.activeCard[i]
     card.location = "hand"
@@ -313,10 +298,8 @@ function PlayerClass:discardHand(count)
     cardCount = #self.activeCard
   end
   if #(self.activeCard) == 0 then
-    print("hand empty, nothing to discard")
     return
   end
-  print("function delta")
   for i=1, cardCount do
     local card = self.activeCard[i]
     card.location = "discard"
@@ -344,10 +327,8 @@ function PlayerClass:insertDeck(count)
     cardCount = #self.activeCard
   end
   if #(self.activeCard) == 0 then
-    print("hand empty, nothing to insert")
     return
   end
-  print("function epsilon")
   for i=1, cardCount do
     local card = self.activeCard[i]
     card.location = "deck"

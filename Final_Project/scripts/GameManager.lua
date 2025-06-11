@@ -33,6 +33,14 @@ function GameManagerClass:new(playerTable, score, notif)
   return managerClass
  end
  
+ ObserverClass = {}
+function ObserverClass:new(manager)
+  local observerClass = {}
+  observerClass.manager = manager
+  setmetatable(observerClass, {__index = ObserverClass})
+  return observerClass
+end
+ 
 function GameManagerClass:gameStart(CardIntel, VanillaIntel)
   self.Cycle = 1
   self.UserTurn = true
@@ -68,7 +76,7 @@ function GameManagerClass:gameStart(CardIntel, VanillaIntel)
 end
 
 function GameManagerClass:update(dt)
-  --print(tostring(dt))
+  
   if self.tutorial == true then
     return
   end
@@ -76,10 +84,7 @@ function GameManagerClass:update(dt)
   if self.winner == " " then
     if self.UserTurn == true then
       self.players[1].grabber:update(self.players[1])
-    end
-  
-    if self.UserTurn == nil then
-      
+    elseif self.UserTurn == nil then
       for _, card in ipairs(player2.hand) do
         card.flipped = true
       end
@@ -88,33 +93,19 @@ function GameManagerClass:update(dt)
         self.eventQueue[1]()
         table.remove(self.eventQueue, 1)
       else
-        --print("waiting")
         self:wait(1.00, dt)
       end
     end
   end
-  
 end
 
 function GameManagerClass:keyUpdate(key)
   if self.UserTurn == false then
     self.players[2]:inputUpdate(key)
   end
-  
 end
 
  
-ObserverClass = {}
- 
-function ObserverClass:new(manager)
-  local observerClass = {}
-  observerClass.manager = manager
-  setmetatable(observerClass, {__index = ObserverClass})
- 
-  
-  
-  return observerClass
-end
 
 function ObserverClass:changeTurn()
   if manager.UserTurn == true then
@@ -134,7 +125,6 @@ function ObserverClass:changeTurn()
     end
     
     table.insert(manager.eventQueue, function() manager:flipCards(manager.players[1], true) end)
-    --table.insert(manager.eventQueue, function() manager:flipCards(manager.players[2], true) end)
 
     
     if first == 1 then
@@ -163,13 +153,11 @@ function aiBehaviour(manager)
       card_count = 1
     end
     for i=1, card_count do
-      local cos = 0
-      --print("ai iter")
+      local cost = 0
       for _, card in ipairs(manager.players[2].activeCard) do
-        cos = cos + card.cost
+        cost = cost + card.cost
       end
-      if #manager.players[2].activeCard == (4) or manager.players[2].hand[1].cost + cos > manager.players[2].manaStock then
-        --print("ai break")
+      if #manager.players[2].activeCard == (4) or manager.players[2].hand[1].cost + cost > manager.players[2].manaStock then
         break
       end
       
@@ -197,9 +185,7 @@ function GameManagerClass:playCards(player1, player2)
   self:updatePlayerPowers(self.players[1], 1)
   self:updatePlayerPowers(self.players[2], 2)
 
-  print("played cards")
   self.waiting = true
-  print(tostring(self.waiting))
 end
 
 function GameManagerClass:flipCards(player, wait)
@@ -216,7 +202,6 @@ function GameManagerClass:flipCards(player, wait)
       self:updatePlayerPowers(self.players[2], 2)
     end
   end
-  print("flipping cards")
 
   if wait then
     self.waiting = true
@@ -257,7 +242,6 @@ function GameManagerClass:finishCycle()
   
   if #self.players[2].activeCard > 0 then
     self.players[2]:discardHand(#self.players[2].activeCard)
-    print("discarded ai")
   end
   
   for _, card in ipairs(self.players[2].hand) do
@@ -270,7 +254,6 @@ function GameManagerClass:finishCycle()
     self.winner = "AI"
   end
   
-  print("cycle finished!")
   self.playerPower = 0
   self.aiPower = 0
   
@@ -292,11 +275,9 @@ function GameManagerClass:wait(waitTime, dt)
 end
 
 function GameManagerClass:updatePlayerPowers(player, index)
-  print("updating powers")
   local playPower = 0
   for _, card in ipairs(player.activeCard) do
     playPower = playPower + card.power
-    print("test56: "..tostring(playerPower))
   end
   
   if index == 1 then

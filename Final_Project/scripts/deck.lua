@@ -27,7 +27,6 @@ function DeckClass:populate(count, cardDataTable)
     newCard.location = "deck"
     newCard2.location = "deck"
     newCard2.flipped = true
-    --newCard.name = "test "..tostring(i)
     table.insert(self.Cards, newCard)
     table.insert(self.Cards, newCard2)
 

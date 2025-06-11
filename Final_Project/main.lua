@@ -42,26 +42,22 @@ function love.load()
   for _, card in pairs(VanillaImport) do
     table.insert(VanillaIntel, card)
   end
-  
-
-  print(tostring(CardIntel) .. "hi")
- 
+   
   notif = NotificationClass:new(980, 320, 330, 70)
-  --notif:activate("test", 1, 4)
   
-  --x,y, activePos, handPos, deckPos, deckSize, discardOffest, handSize, CardPool
   player1 = UserClass:new(0, 430, 300, 10, 760, 20, 760, 7, CardIntel, notif)
-
   player2 = AIClass:new(0, 0, 300, 10, 760, 20, 760, 7, CardIntel, notif)
   
   manager = GameManagerClass:new({player1, player2}, 20, notif)
-  
+
   manager:gameStart(CardIntel, VanillaIntel)
   
 end
---|||||||--
---spacing--
---|||||||--
+
+
+
+
+
 function love.draw()
   love.graphics.setBackgroundColor( 112/255, 54/225, 43/225, 1 )
   love.graphics.print("Challengers of Athens", 10, 10)
@@ -78,9 +74,9 @@ function love.draw()
   else
     love.graphics.print("Action phase" , 10, 350, 0, 2, 2)
   end
-  if player1.grabber then
-    player1.grabber:draw()
-  end
+  
+  player1.grabber:draw()
+  
   love.graphics.setColor(1,1,1,1)
   love.graphics.print("Player Power: "..tostring(manager.playerPower), 400, 400, 0, 1.5, 1.5)
   love.graphics.print("AI Power: "..tostring(manager.aiPower) , 430, 310, 0, 1.5, 1.5)
@@ -98,19 +94,19 @@ function love.draw()
     love.graphics.print(manager.winner.." has won! Press 'r' to play again!" , 300, 350, 0, 3, 3)
   end
 end
---|||||||--
---spacing--
---|||||||--
+
+
+
 
 function love.update()
   dt = love.timer.getDelta()
   manager:update(dt)
-  --print()
 end
 
---|||||||--
---spacing--
---|||||||--
+
+
+
+
 function love.keypressed(key)
   if manager.winner ~= " " then
     if key == 'r' then
@@ -118,6 +114,9 @@ function love.keypressed(key)
     end
   end
 end
+
+
+
 
 function love.keyreleased(key)
    if key == "i" then

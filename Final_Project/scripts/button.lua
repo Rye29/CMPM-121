@@ -12,7 +12,6 @@ function ButtonClass:new(xPos, yPos, text, sizeX, sizeY)
   buttonClass.Text = text
   
   buttonClass.size = Vector(sizeX, sizeY)
-  --buttonClass.state = 0
   return buttonClass
 end
 
