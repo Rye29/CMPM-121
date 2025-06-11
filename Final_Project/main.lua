@@ -31,7 +31,7 @@ function love.load()
 
   love.window.setMode(screenWidth, screenHeight)
   love.graphics.setFont(font)
-  love.window.setTitle("CMPM 121 Project 3: CCG - BHudick")
+  love.window.setTitle("CMPM 121 Project Final: Challengers of Athens")
   
   CardIntel = {}
   VanillaIntel = {}
@@ -81,13 +81,20 @@ function love.draw()
   if player1.grabber then
     player1.grabber:draw()
   end
+  love.graphics.setColor(1,1,1,1)
+  love.graphics.print("Player Power: "..tostring(manager.playerPower), 400, 400, 0, 1.5, 1.5)
+  love.graphics.print("AI Power: "..tostring(manager.aiPower) , 430, 310, 0, 1.5, 1.5)
+  
   notif:draw()
   
   if manager.tutorial == true then
     manager:tutorialDraw()
+  else
+    love.graphics.print("Press 'i' for a tutorial/controls" , 5, 415)
   end
   
   if manager.winner ~= " " then
+    love.graphics.setColor(1,1,1,1)
     love.graphics.print(manager.winner.." has won! Press 'r' to play again!" , 300, 350, 0, 3, 3)
   end
 end

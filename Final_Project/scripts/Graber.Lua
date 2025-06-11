@@ -259,7 +259,7 @@ function GrabberClass:draw()
     love.graphics.setColor(1,0,0,1)
     love.graphics.print(card.power, xVal+card_increase_x*1.9, yVal-card_increase_y*1.9)
     
-    love.graphics.setColor(0,0,0,1)
+    love.graphics.setColor(1,1,1,1)
     love.graphics.print(card.name, xVal+card_increase_x*0.25, yVal-card_increase_y*1.6)
     love.graphics.print(card.text, xVal+card_increase_x*0.25, yVal-card_increase_y, 0, 0.6, 0.6)
     

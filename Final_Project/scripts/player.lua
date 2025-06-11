@@ -31,6 +31,8 @@ function PlayerClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX
   playerClass.discardPile = {}
   playerClass.discardPos = Vector(xPos+discardOffest, yPos+150)
   
+  playerClass.userUI = nil
+
   playerClass.manaStock = 0
   playerClass.points = 0
   
@@ -52,7 +54,7 @@ function UserClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, 
   
   self.handSize = maxHandSize
   self.deckSize = maxDeckCards
-
+  self.userUI = true
   
   self.grabber = GrabberClass:new()
   self.playButton = ButtonClass:new(self.position.x+150, self.position.y+40, "Play Hand", 65, 20)
@@ -70,7 +72,7 @@ function AIClass:new(xPos, yPos, activeCardOffsetX, handOffsetX, deckOffsetX, ma
   self.discardPos = Vector(xPos+discardOffest, yPos+150)
   self.deck.position = self.deckPos
   self.notification = notif
-  
+  self.userUI = nil
   self.handSize = maxHandSize
   self.deckSize = maxDeckCards
   return self
@@ -122,6 +124,14 @@ function PlayerClass:draw()
   love.graphics.setColor(255/255, 204/255, 23/255, 1)
   love.graphics.print(("Mana: "..tostring(self.manaStock)), self.position.x+5, self.position.y+5, 0, 1.4, 1.4)
   love.graphics.print(("Points: "..tostring(self.points)), self.position.x+1180, self.position.y+260, 0, 1.4, 1.4)
+  
+  if self.userUI ~= nil then
+    local cost = 0
+    for _, card in ipairs(self.activeCard) do
+      cost = cost + card.cost
+    end
+    love.graphics.print(("Cost: "..tostring(cost)), self.position.x+5, self.position.y+45, 0, 1.4, 1.4)
+  end
 
   --deck pile
   love.graphics.setColor(0, 0, 0.3, 1)
