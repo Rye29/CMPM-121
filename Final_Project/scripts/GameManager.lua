@@ -305,7 +305,7 @@ function GameManagerClass:tutorialDraw()
     
   love.graphics.print("-The face down card represents your deck where you'll automatically draw a card at\nthe begininng of each round. You may also insert a card into the bottom of it by\ndragging and releasing a card over it.", 120, 300)
     
-  love.graphics.print("-Finally, the blue slots represent your hand. Cards automatically go here when drawn from the deck, if full any card draw is skipped.", 120, 370)
+  love.graphics.print("-Finally, the blue slots represent your hand. Cards automatically go here when drawn\nfrom the deck, if full any card draw is skipped.", 120, 370)
     
   love.graphics.print("-Each card has a power level(red number), a cost to be played(blue number), and an ability represented as text .", 120, 420)
     
@@ -353,6 +353,10 @@ function GameManagerClass:tutorialDraw()
   love.graphics.line(850, 145, 950, 175)
   love.graphics.line(943, 165, 950, 175)
   love.graphics.line(938, 180, 950, 175)
+  
+  love.graphics.setColor(255/255, 255/255, 255/255, 1)
+  love.graphics.print("-This chart demonstrates where a player can drag cards:\nchoose the color that represents the card's location\nthe arrows show where the player can drag and drop it to\n no outgoing arrows means the player can't pick up from there",  780, 280)
+
 
   love.graphics.setColor(255/255, 204/255, 23/255, 1)
   love.graphics.rectangle("fill", 900, 500, 100, 160, 5, 5)
@@ -364,7 +368,11 @@ function GameManagerClass:tutorialDraw()
 
   love.graphics.setColor(255/255, 0/255, 0/255, 1)
   love.graphics.print("5", 980, 505, 0, 1.4, 1.4)
-  love.graphics.print("5 is the power it contributes\nto the stage",  1010, 590)
+  love.graphics.print("5 is the power it contributes\nto the stage",  1010, 580)
+  love.graphics.setColor(255/255, 255/255, 255/255, 1)
+  love.graphics.print("Right clicking when hovering your\ncursor over a card on your side\nenlarges it for easier readability",  680, 600)
+
+
 
   love.graphics.setColor(1,1,1, 1)
   love.graphics.print("Card Name", 910, 540, 0, 1.3, 1.3)

@@ -86,6 +86,7 @@ function love.draw()
   if manager.tutorial == true then
     manager:tutorialDraw()
   else
+    love.graphics.setColor(1,1,1,1)
     love.graphics.print("Press 'i' for a tutorial/controls" , 5, 415)
   end
   
